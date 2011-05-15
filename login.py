@@ -1,27 +1,16 @@
 #!/usr/bin/env python
 
-import curl
-import pycurl
+import httplib
 import sys
 
-import urllib
-import urllib2
+url = '/ICSLogin/auth-up'
 
-test = curl.Curl()
+conn = httplib.HTTPSConnection('bugzilla.novell.com')
+string = "username=%s&password=%s" % (sys.argv[1], sys.argv[2])
 
-tup = (('login', sys.argv[1]), ('password', sys.argv[2]))
+conn.request("POST", url, string)
+response = conn.getresponse()
 
-# try to login
-#test.post("https://bugzilla.novell.com/ICSLogin/auth-up", tup)
-# try to login 2
-values = {'user': sys.argv[1],
-        'password': sys.argv[2]}
-data = urllib.urlencode(values)
-url = "https://bugzilla.novell.com/ICSLogin/auth-up"
-req = urllib2.Request(url, data)
-response = urllib2.urlopen(req)
+print response.status
 
-the_page = response.read()
-
-print the_page
-
+print response.getheaders()
