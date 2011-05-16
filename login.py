@@ -11,6 +11,8 @@ string = "username=%s&password=%s" % (sys.argv[1], sys.argv[2])
 conn.request("POST", url, string)
 response = conn.getresponse()
 
-print response.status
-
-print response.getheaders()
+if response.status == 200:
+    print 'Wrong login credentials!'
+else:
+    h = response.getheaders()
+    print 'Login successful! - cookie is %s' % (str((h[1])[1]))
