@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+#Small login script. Needs to be called like this:
+#python login.py 'username' 'password'
+
 import httplib
 import sys
 
