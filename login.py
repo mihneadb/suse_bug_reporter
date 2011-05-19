@@ -3,7 +3,7 @@
 # provides login into Novell Bugzilla
 # stores credentials in a file
 
-class credentials:
+class Credentials:
     ''' container for the user's credentials '''
     def __init__(self, username, password, cookie):
         self.username = username
@@ -21,6 +21,7 @@ auth_url = '/ICSLogin/auth-up'
 
 # check to see if the credentials are already stored
 try:
+    # load the file, decode the string and load the serialized object
     creds_file = open('.sbr', 'r')
     data = creds_file.read()
     data = base64.b64decode(data)
@@ -28,11 +29,12 @@ try:
     print 'The user has stored credentials.'
 
 except IOError:
-    # no file found
+    # no file found, get username & password
     print 'No credentials stored, please log in.'
     username = raw_input('Enter username: ')
     password = getpass('Enter password: ')
 
+    # try to login
     connection = httplib.HTTPSConnection('bugzilla.novell.com')
     login_string = "username=%s&password=%s" % (username, password)
 
@@ -45,7 +47,7 @@ except IOError:
     else:
         headers = response.getheaders()
         cookie = (headers[1])[1]
-        creds = credentials(username, password, cookie)
+        creds = Credentials(username, password, cookie)
 
         data = cPickle.dumps(creds)
         data = base64.b64encode(data)
