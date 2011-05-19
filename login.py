@@ -1,21 +1,60 @@
 #!/usr/bin/env python
 
-#Small login script. Needs to be called like this:
-#python login.py 'username' 'password'
+# provides login into Novell Bugzilla
+# stores credentials in a file
+
+class credentials:
+    ''' container for the user's credentials '''
+    def __init__(self, username, password, cookie):
+        self.username = username
+        self.password = password
+        self.cookie = cookie
 
 import httplib
 import sys
+import base64
+import cPickle
 
-url = '/ICSLogin/auth-up'
+from getpass import getpass
 
-conn = httplib.HTTPSConnection('bugzilla.novell.com')
-string = "username=%s&password=%s" % (sys.argv[1], sys.argv[2])
+auth_url = '/ICSLogin/auth-up'
 
-conn.request("POST", url, string)
-response = conn.getresponse()
+# check to see if the credentials are already stored
+try:
+    creds_file = open('.sbr', 'r')
+    data = creds_file.read()
+    data = base64.b64decode(data)
+    creds = cPickle.loads(data)
+    print 'The user has stored credentials.'
 
-if response.status == 200:
-    print 'Wrong login credentials!'
-else:
-    h = response.getheaders()
-    print 'Login successful! - cookie is %s' % (str((h[1])[1]))
+except IOError:
+    # no file found
+    print 'No credentials stored, please log in.'
+    username = raw_input('Enter username: ')
+    password = getpass('Enter password: ')
+
+    connection = httplib.HTTPSConnection('bugzilla.novell.com')
+    login_string = "username=%s&password=%s" % (username, password)
+
+    connection.request("POST", auth_url, login_string)
+    response = connection.getresponse()
+
+    if response.status == 200:
+        print 'Wrong login credentials!'
+
+    else:
+        headers = response.getheaders()
+        cookie = (headers[1])[1]
+        creds = credentials(username, password, cookie)
+
+        data = cPickle.dumps(creds)
+        data = base64.b64encode(data)
+
+        creds_file = open('.sbr', 'w')
+        creds_file.write(data)
+        creds_file.close()
+
+
+# testing purposes
+print creds.username
+print creds.cookie
