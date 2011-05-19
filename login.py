@@ -12,10 +12,31 @@ class Credentials:
 
 import httplib
 import sys
+import os
 import base64
 import cPickle
 
 from getpass import getpass
+
+
+# command-line arguments
+if len(sys.argv) > 1:
+
+    if sys.argv[1] == '--clear':
+        # delete the credentials file
+        try:
+            os.remove('.sbr')
+        except OSError:
+            pass
+        sys.exit(0)
+
+    elif sys.argv[1] == '--help':
+        # show help / usage message
+        print 'Usage:'
+        print '--clear  cleares stored credentials (if any)'
+        print '--help   shows this message'
+        sys.exit(0)
+
 
 auth_url = '/ICSLogin/auth-up'
 
@@ -31,6 +52,7 @@ try:
 except IOError:
     # no file found, get username & password
     print 'No credentials stored, please log in.'
+    print 'No account? -> https://secure-www.novell.com/selfreg/jsp/createAccount.jsp'
     username = raw_input('Enter username: ')
     password = getpass('Enter password: ')
 
@@ -43,6 +65,10 @@ except IOError:
 
     if response.status == 200:
         print 'Wrong login credentials!'
+        print 'If you haven\'t got an account, please register here:'
+        print 'https://secure-www.novell.com/selfreg/jsp/createAccount.jsp'
+
+        fail = 1
 
     else:
         headers = response.getheaders()
@@ -58,5 +84,6 @@ except IOError:
 
 
 # testing purposes
-print creds.username
-print creds.cookie
+if not fail:
+    print creds.username
+    print creds.cookie
