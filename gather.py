@@ -1,52 +1,25 @@
 #!/usr/bin/env python
 
-import os
+from subprocess import Popen, PIPE
 
-# you can define the output file name here
-sysinfo_file_name = 'sysinfo'
+def gather_from_file(file_name):
+    with open(file_name, 'r') as f:
+        return f.read().strip()
 
-def gather(release=1, uname=1, cpu=1, lspci=1, lsmod=1):
-    ''' gathers info about the system'''
+def gather_from_command(command):
+    return Popen(command, stdout=PIPE).communicate()[0].strip()
 
-    sysinfo_file = open('%s' % sysinfo_file_name, 'w')
-
-    sysinfo_file.write('OS version:\n\n')
-    sysinfo_file.close()
-    os.system('cat /etc/SuSE-release >> %s' % sysinfo_file_name)
-    sysinfo_file = open('%s' % sysinfo_file_name, 'a')
-    sysinfo_file.write('\n------------------------------------------' \
-            '-------------------------------------\n\n')
-
-    sysinfo_file.write('Uname output:\n\n')
-    sysinfo_file.close()
-    os.system('uname -a >> %s' % sysinfo_file_name)
-    sysinfo_file = open('%s' % sysinfo_file_name, 'a')
-    sysinfo_file.write('\n------------------------------------------' \
-            '-------------------------------------\n\n')
-
-    sysinfo_file.write('CPU info:\n\n')
-    sysinfo_file.close()
-    os.system('cat /proc/cpuinfo >> %s' % sysinfo_file_name)
-    sysinfo_file = open('%s' % sysinfo_file_name, 'a')
-    sysinfo_file.write('\n------------------------------------------' \
-            '-------------------------------------\n\n')
-
-    sysinfo_file.write('lspci output:\n\n')
-    sysinfo_file.close()
-    os.system('lspci >> %s' % sysinfo_file_name)
-    sysinfo_file = open('%s' % sysinfo_file_name, 'a')
-    sysinfo_file.write('\n------------------------------------------' \
-            '-------------------------------------\n\n')
-
-    sysinfo_file.write('lsmod output:\n\n')
-    sysinfo_file.close()
-    os.system('lsmod >> %s' % sysinfo_file_name)
-    sysinfo_file = open('%s' % sysinfo_file_name, 'a')
-    sysinfo_file.write('\n------------------------------------------' \
-            '-------------------------------------\n\n')
-
-    sysinfo_file.close()
+def gather(gather_list):
+    g_info = dict()
+    for key, func, arg in gather_list:
+        g_info[key] = func(arg)
+    return g_info
 
 
-if __name__ == '__main__':
-    gather()
+gather_list = [
+        ('os-version', gather_from_file, '/etc/issue'),
+        ('uname', gather_from_command, ('uname', '-r', '-i')),
+        ]
+
+g = gather(gather_list)
+print g
