@@ -2,24 +2,22 @@
 
 from subprocess import Popen, PIPE
 
-def gather_from_file(file_name):
-    with open(file_name, 'r') as f:
-        return f.read().strip()
+# where to gather the information from
+gather_from = ['lsmod', 'uname', 'release', 'cpu', 'vga']
 
-def gather_from_command(command):
-    return Popen(command, stdout=PIPE).communicate()[0].strip()
+def gather_data(gather_list):
+    ''' returns a dictionary with keys the sources from where the data was
+        gathered (i.e. 'lsmod') and values the actual data that was found '''
 
-def gather(gather_list):
-    g_info = dict()
-    for key, func, arg in gather_list:
-        g_info[key] = func(arg)
-    return g_info
+    data = dict()
+
+    for prop in gather_list:
+        module = __import__(prop)
+        data[prop] = getattr(module, 'gather_from_%s' % prop)()
+
+    return data
 
 
-gather_list = [
-        ('os-version', gather_from_file, '/etc/issue'),
-        ('uname', gather_from_command, ('uname', '-r', '-i')),
-        ]
-
-g = gather(gather_list)
-print g
+if __name__ == '__main__':
+    test = gather_data(gather_from)
+    print test

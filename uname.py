@@ -4,7 +4,7 @@ from subprocess import Popen, PIPE
 
 
 def gather_from_uname():
-    ''' geterates a dictionary that contains three keys:
+    ''' generates a dictionary that contains three keys:
     kernel_release, kernel_version and hw_platform '''
 
     uname = dict()

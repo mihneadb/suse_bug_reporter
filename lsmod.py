@@ -4,11 +4,10 @@ from subprocess import Popen, PIPE
 
 
 def gather_from_lsmod():
-    ''' Generates a dictionary with the key modules and value a list of strings
-        which represent the modules loaded at the moment '''
+    ''' Generates a list of strings which represent the modules loaded
+        at the moment '''
 
     modules_list = list()
-    modules = dict()
 
     output = Popen('lsmod', stdout=PIPE).communicate()[0]
     output = output.splitlines()
@@ -17,8 +16,7 @@ def gather_from_lsmod():
     for line in output:
         modules_list.append(line.split()[0])
 
-    modules['modules'] = modules_list
-    return modules
+    return modules_list
 
 
 if __name__ == '__main__':
