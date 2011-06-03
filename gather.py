@@ -3,7 +3,7 @@
 from subprocess import Popen, PIPE
 
 # where to gather the information from
-gather_from = ['lsmod', 'uname', 'release', 'cpu', 'vga']
+gather_from = ['lsmod', 'uname', 'release', 'cpu', 'vga', 'mem']
 
 def gather_data(gather_list):
     ''' returns a dictionary with keys the sources from where the data was
