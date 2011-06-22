@@ -4,7 +4,7 @@ import rpm
 
 
 def getVersion(header):
-
+    ''' returns a string that represents the package's version '''
     version = ''
 
     for key in ('epoch', 'version', 'release'):
@@ -16,8 +16,9 @@ def getVersion(header):
 
     return version
 
-def getApiURL(disturl):
 
+def getApiURL(disturl):
+    ''' returns a string that represents the package's apiurl '''
     disturl = disturl.split('/')
     disturl = disturl[2].split('.')
     apiurl = '.'.join(disturl[1:])
@@ -25,11 +26,13 @@ def getApiURL(disturl):
 
     return apiurl
 
-def getProject(disturl):
 
+def getProject(disturl):
+    ''' returns a string that represents the package's project name '''
     disturl = disturl.split('/')
 
     return disturl[3]
+
 
 def getInfo(package):
     ''' returns a dictionary with a tuple associated to each package
@@ -59,4 +62,6 @@ def getInfo(package):
 
     return ret
 
-print getInfo('gstreamer')
+# testing purposes
+if __name__ == '__main__':
+    print getInfo('gstreamer')
