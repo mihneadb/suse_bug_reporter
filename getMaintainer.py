@@ -2,6 +2,7 @@
 
 import sys
 import rpm
+import urllib2
 import osc.conf
 import osc.core
 
@@ -10,6 +11,9 @@ try:
 except ImportError:
     import cElementTree as ET
 
+
+#flag to turn globbing on or off
+glob = 0
 
 def getVersion(header):
     ''' returns a string that represents the package's version '''
@@ -52,7 +56,13 @@ def getInfo(package):
 
     for symbol in ('name', 'provides'):
 
-        match = ts.dbMatch(symbol, package)
+        #to match all packages, with globbing!
+        if not glob:
+            match = ts.dbMatch(symbol, package)
+        else:
+            match = ts.dbMatch()
+            match.pattern(symbol, rpm.RPMMIRE_GLOB, package + '*')
+
         for header in match:
             disturl = header['disturl']
             version = getVersion(header)
@@ -63,7 +73,7 @@ def getInfo(package):
                 apiurl = getApiURL(disturl)
                 project = getProject(disturl)
 
-            ret[header['name']] = (version, apiurl, project, package)
+            ret[header['name']] = (version, apiurl, project, header['name'])
 
     ts.clean()
     ts.closeDB()
@@ -175,12 +185,12 @@ def getMailsTuple(persons):
     return (assignee, cc)
 
 
-def getAssignedPersons(package):
+def getAssignedPersons(input_package):
 
     #init
     osc.conf.get_config()
 
-    pkg_info = getInfo(package)
+    pkg_info = getInfo(input_package)
     if pkg_info == None:
         # no package found
         print "No package found"
@@ -189,17 +199,18 @@ def getAssignedPersons(package):
     keys = pkg_info.keys()
     
     if len(keys) == 1:
-        (version, apiurl, project, name) = pkg_info[keys[0]]
+        (version, apiurl, project, package) = pkg_info[keys[0]]
     
     else:
         # there are more than one packages that match, the user must pick one
-        print "There are more than one packages that match your search\
-                , please pick one"
+        print "There are more than one packages that match your search, please pick one"
         for p in range(len(keys)):
-            print p, keys[p]
-        idx = int(raw_input("Which one? "))
-        (version, apiurl, project, name) = pkg_info[keys[idx]]
+            print '%4d %40s\t' % (p, keys[p]),
+            if p%2 == 1:
+                print ''
 
+        idx = int(raw_input("\nWhich one? "))
+        (version, apiurl, project, package) = pkg_info[keys[idx]]
 
     prj_data = getProjectData(apiurl, project)
     if prj_data == None:
@@ -208,7 +219,7 @@ def getAssignedPersons(package):
 
     pkg_data = getPackageData(apiurl, project, package)
     if pkg_data == None:
-        print "Package %s doesn't exist in project %s!" % (package, projet)
+        print "Package %s doesn't exist in project %s!" % (package, project)
         return None
 
     tree = ET.fromstring(''.join(pkg_data))
@@ -244,6 +255,9 @@ def getAssignedPersons(package):
 
 
 # testing purposes
+
+glob = raw_input('Do you want to use exact search or loose search?\n0: exact\n1: loose\n')
+
 
 if __name__ == '__main__':
     print getAssignedPersons(sys.argv[1])
