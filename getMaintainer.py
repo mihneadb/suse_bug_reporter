@@ -39,7 +39,6 @@ def getInfo(package):
     glob = 0
     if package[-1] == '*':
         glob = 1;
-        package = package[:-1]
 
 
     ts = rpm.TransactionSet()
@@ -59,7 +58,7 @@ def getInfo(package):
             match = ts.dbMatch(symbol, package)
         else:
             match = ts.dbMatch()
-            match.pattern(symbol, rpm.RPMMIRE_GLOB, package + '*')
+            match.pattern(symbol, rpm.RPMMIRE_GLOB, package)
 
         for header in match:
             disturl = header['disturl']
