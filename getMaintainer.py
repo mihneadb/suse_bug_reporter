@@ -12,8 +12,6 @@ except ImportError:
     import cElementTree as ET
 
 
-#flag to turn globbing on or off
-glob = 0
 
 def getVersion(header):
     ''' returns a string that represents the package's version '''
@@ -48,8 +46,18 @@ def getProject(disturl):
 
 def getInfo(package):
     ''' returns a dictionary with a tuple associated to each package
-    the tuple is like this: (version, apiurl, project, package) '''
-    
+    the tuple is like this: (version, apiurl, project, package) 
+    !! supports globbing. if called with 'python*', it will search all the
+    packages that match python*. if called with 'python', it will do exact
+    matching '''
+
+    #check to see if the user wants globbing
+    glob = 0
+    if package[-1] == '*':
+        glob = 1;
+        package = package[:-1]
+
+
     ts = rpm.TransactionSet()
     
     ret = {}
@@ -193,7 +201,7 @@ def getAssignedPersons(input_package):
     pkg_info = getInfo(input_package)
     if pkg_info == None:
         # no package found
-        print "No package found"
+        print "No package found, maybe try adding the '*' character?"
         sys.exit(1)
 
     keys = pkg_info.keys()
@@ -255,9 +263,6 @@ def getAssignedPersons(input_package):
 
 
 # testing purposes
-
-glob = raw_input('Do you want to use exact search or loose search?\n0: exact\n1: loose\n')
-
 
 if __name__ == '__main__':
     print getAssignedPersons(sys.argv[1])
