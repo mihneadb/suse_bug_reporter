@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import re
 import rpm
 import urllib2
 import osc.conf
@@ -27,23 +28,6 @@ def getVersion(header):
     return version
 
 
-def getApiURL(disturl):
-    ''' returns a string that represents the package's apiurl '''
-    disturl = disturl.split('/')
-    disturl = disturl[2].split('.')
-    apiurl = '.'.join(disturl[1:])
-    apiurl = 'https://api.' + apiurl
-
-    return apiurl
-
-
-def getProject(disturl):
-    ''' returns a string that represents the package's project name '''
-    disturl = disturl.split('/')
-
-    return disturl[3]
-
-
 def getInfo(package):
     ''' returns a dictionary with a tuple associated to each package
     the tuple is like this: (version, apiurl, project, package) 
@@ -62,6 +46,12 @@ def getInfo(package):
     
     ret = {}
 
+    #regex stuff for parsing the disturl
+    bs_re = re.compile(r"^(?P<bs>.*)://(?P<apiurl>.*?)/(?P<project>.*?)/"\
+            "(?P<repository>.*?)/(?P<md5>[a-f0-9]*)-(?P<source>.*)$")
+    srcrep_re = re.compile(r"^srcrep:(?P<md5>[a-f0-9]*)-(?P<source>.*)$")
+
+
     for symbol in ('name', 'provides'):
 
         #to match all packages, with globbing!
@@ -74,14 +64,36 @@ def getInfo(package):
         for header in match:
             disturl = header['disturl']
             version = getVersion(header)
+
             if '.pm.' in version:
                 apiurl = None
                 project = 'Packman'
-            else:
-                apiurl = getApiURL(disturl)
-                project = getProject(disturl)
+                ret[header['name']] = (version, apiurl, project, header['name'])
+                continue
 
-            ret[header['name']] = (version, apiurl, project, header['name'])
+            if disturl:
+                m = srcrep_re.match(disturl)
+                if m:
+                    ret[header['name']] = (version,
+                            apiurl,
+                            header['distribution'].split('/')[0].strip(),
+                            m.group('source'))
+
+                m = bs_re.match(disturl)
+                if m:
+                    apiurl = m.group('apiurl')
+                    if apiurl.split('.')[0] != 'api':
+                        apiurl = apiurl.split('.')
+                        apiurl = 'https://api.' + '.'.join(apiurl[1:])
+                    ret[header['name']] = (version,
+                            apiurl,
+                            m.group('project'),
+                            m.group('source'))
+            else:
+                ret[header['name']] = (version,
+                        None,
+                        header['distribution'].split('/').strip(),
+                        header['name'])
 
     ts.clean()
     ts.closeDB()
@@ -211,7 +223,8 @@ def getAssignedPersons(input_package):
     
     else:
         # there are more than one packages that match, the user must pick one
-        print "There are more than one packages that match your search, please pick one"
+        print "There are more than one packages that match your search"\
+                ", please pick one"
         for p in range(len(keys)):
             print '%4d %40s\t' % (p, keys[p]),
             if p%2 == 1:
@@ -223,7 +236,7 @@ def getAssignedPersons(input_package):
     prj_data = getProjectData(apiurl, project)
     if prj_data == None:
         print "Project %s doesn't exist!" % (project)
-        return None
+        sys.exit(1)
 
     pkg_data = getPackageData(apiurl, project, package)
     if pkg_data == None:
