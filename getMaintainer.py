@@ -151,6 +151,7 @@ def getMaintainersMail(persons):
     ''' returns a list of emails as strings '''
     return [p[0] for p in persons if p[1] == 'maintainer']
 
+
 def getMailsTuple(persons):
     ''' returns a tuple like (assignee, cc) - cc is a list '''
 
