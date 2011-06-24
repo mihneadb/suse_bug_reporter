@@ -38,3 +38,5 @@ bugzilla
 test*
 susereport*
 .sbr
+
+.swp
