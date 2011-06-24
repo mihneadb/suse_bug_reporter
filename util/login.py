@@ -82,8 +82,6 @@ except IOError:
         creds_file.write(data)
         creds_file.close()
 
-        fail = 0
-
 
 # testing purposes
 if not fail:
