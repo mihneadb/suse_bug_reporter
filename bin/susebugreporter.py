@@ -9,10 +9,19 @@ pkg = 'suse_bug_reporter'
 # name of the util package
 u_pkg = 'util'
 
+# name of the aid user package
+a_pkg = 'aid_user'
+
 
 def do_aid(args):
-    print 'do_aid'
-    print args
+
+    aid = args.choice
+
+    print 'Please click on the window to which you want to find the app name.'
+    
+    exec 'from %s.%s import %s' % (pkg, a_pkg, aid)
+    exec 'output = %s.%s()' % (aid, aid)
+    print "The app's name is " + output + '.'
 
 def do_gather(args):
     print 'Gathering relevant system information...'
@@ -32,7 +41,7 @@ def main():
     
     aid = commands.add_parser('aid', help='aid users')
     aid.set_defaults(func=do_aid)
-    aid.add_argument('choice', type=int)
+    aid.add_argument('choice', type=str, choices=['find_app'])
     
     gather = commands.add_parser('gather', help='gather')
     gather.set_defaults(func=do_gather)
