@@ -5,6 +5,13 @@ from subprocess import Popen, PIPE
 # where to gather the information from
 gather_from = ['lsmod', 'uname', 'release', 'cpu', 'vga', 'mem', 'cmdline']
 
+# name of the main package
+pkg = 'Suse-Bug-Reporter'
+
+# name of the gathering modules package
+g_pkg = 'gathering_modules'
+
+
 def gather_data(gather_list):
     ''' returns a dictionary with keys the sources from where the data was
         gathered (i.e. 'lsmod') and values the actual data that was found '''
@@ -12,7 +19,7 @@ def gather_data(gather_list):
     data = dict()
 
     for prop in gather_list:
-        module = __import__(prop)
+        module = __import__('%s.%s.%s' % (pkg, g_pkg, prop), fromlist=[prop])
         data[prop] = getattr(module, 'gather_from_%s' % prop)()
 
     return data
@@ -21,3 +28,4 @@ def gather_data(gather_list):
 if __name__ == '__main__':
     test = gather_data(gather_from)
     print test
+

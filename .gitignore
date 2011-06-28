@@ -39,4 +39,4 @@ test*
 susereport*
 .sbr
 
-.swp
+*.swp

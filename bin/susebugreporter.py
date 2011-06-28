@@ -5,11 +5,11 @@ import argparse
  
 def do_aid(args):
     print "do_aid"
-    print args.choice
+    print args
 
 def do_gather(args):
-    print "do_gather"
-    print args
+    print "Gathering relevant system information..."
+    print 
  
 def main():
  
