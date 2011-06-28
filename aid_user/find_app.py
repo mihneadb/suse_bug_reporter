@@ -14,7 +14,7 @@ def find_app():
     output = output[3].lower()
     output = output.replace('"', '')
 
-    return output
+    return "The app's name is " + output + "."
 
 
 if __name__ == '__main__':

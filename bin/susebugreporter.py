@@ -19,7 +19,7 @@ def do_aid(args):
 
     exec 'from %s.%s import %s' % (pkg, a_pkg, aid)
     exec 'output = %s.%s()' % (aid, aid)
-    print "The app's name is " + output + '.'
+    print output
 
 def do_gather(args):
     print 'Gathering relevant system information...'
