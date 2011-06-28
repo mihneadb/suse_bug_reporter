@@ -7,6 +7,8 @@ def find_app():
     ''' returns a string that represents the name of the application
         clicked by the user '''
 
+    print "Please click on the window of which you want to find the app name."
+
     output = Popen(('xprop', 'WM_CLASS'), stdout=PIPE).communicate()[0]
     output = output.split()
     output = output[3].lower()

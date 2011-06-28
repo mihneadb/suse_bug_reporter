@@ -17,8 +17,6 @@ def do_aid(args):
 
     aid = args.choice
 
-    print 'Please click on the window to which you want to find the app name.'
-    
     exec 'from %s.%s import %s' % (pkg, a_pkg, aid)
     exec 'output = %s.%s()' % (aid, aid)
     print "The app's name is " + output + '.'
