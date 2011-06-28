@@ -17,11 +17,15 @@ def do_aid(args):
 
     aid = args.choice
 
-    exec 'from %s.%s import %s' % (pkg, a_pkg, aid)
-    exec 'output = %s.%s()' % (aid, aid)
-    print output
+    # safety precaution for exec
+    ns = dict()
+
+    exec 'from %s.%s import %s' % (pkg, a_pkg, aid) in ns
+    exec 'output = %s.%s()' % (aid, aid) in ns
+    print ns['output']
 
 def do_gather(args):
+
     print 'Gathering relevant system information...'
 
     exec 'from %s.%s import gather' % (pkg, u_pkg)
