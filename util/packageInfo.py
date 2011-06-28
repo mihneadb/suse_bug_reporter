@@ -29,11 +29,12 @@ def getVersion(header):
 
 
 def getInfo(package):
-    ''' returns a dictionary with a tuple associated to each package
+    ''' returns a tuple associated to the package selected by the user
     the tuple is like this: (version, apiurl, project, package) 
     !! supports globbing. if called with 'python*', it will search all the
     packages that match python*. if called with 'python', it will do exact
-    matching '''
+    matching 
+    !! if there is more than one package matched, the user must choose one '''
 
     #check to see if the user wants globbing
     glob = 0
@@ -97,8 +98,28 @@ def getInfo(package):
     ts.clean()
     ts.closeDB()
 
-    if ret == {}:
+    keys = ret.keys()
+    length = len(keys)
+    if length == 0:
         return None
+        
+    elif length == 1:
+        ret = ret[keys[0]]
+
+    elif length > 1:
+        # there are more than one packages that match, the user must pick one
+        print "There are more than one packages that match your search"\
+                ", please pick one"
+        for p in range(length):
+            print '%4d %40s\t' % (p, keys[p]),
+            if p%2 == 1:
+                print ''
+
+        idx = int(raw_input("\nWhich one? "))
+        while idx < 0 or idx >= length:
+	    print "Wrong index, please try again."
+	    idx = int(raw_input("\nWhich one? "))
+	ret = ret[keys[idx]]
 
     return ret
 
@@ -204,33 +225,15 @@ def getMailsTuple(persons):
     return (assignee, cc)
 
 
-def getAssignedPersons(input_package):
+def getAssignedPersons(pkg_info):
+    ''' takes as argument a tuple returned by the getInfo() function;
+    returns a tuple with the list of emails for the persons associated
+    with the input_package '''
 
     #init
     osc.conf.get_config()
 
-    pkg_info = getInfo(input_package)
-    if pkg_info == None:
-        # no package found
-        print "No package found, maybe try adding the '*' character?"
-        sys.exit(1)
-
-    keys = pkg_info.keys()
-    
-    if len(keys) == 1:
-        (version, apiurl, project, package) = pkg_info[keys[0]]
-    
-    else:
-        # there are more than one packages that match, the user must pick one
-        print "There are more than one packages that match your search"\
-                ", please pick one"
-        for p in range(len(keys)):
-            print '%4d %40s\t' % (p, keys[p]),
-            if p%2 == 1:
-                print ''
-
-        idx = int(raw_input("\nWhich one? "))
-        (version, apiurl, project, package) = pkg_info[keys[idx]]
+    (version, apiurl, project, package) = pkg_info  
 
     prj_data = getProjectData(apiurl, project)
     if prj_data == None:
@@ -271,10 +274,3 @@ def getAssignedPersons(input_package):
 
     return getMailsTuple(persons)
 
-
-
-
-# testing purposes
-
-if __name__ == '__main__':
-    print getAssignedPersons(sys.argv[1])
