@@ -1,2 +1,11 @@
-Hello, world!
+Usage instructions:
 
+You also need to get the python-bugzilla library:
+git clone git://gitorious.org/opensuse/python-bugzilla.git -b suse
+
+Then link the bugzilla folder inside the suse_bug_reporter folder:
+% ln -s python-bugzilla/bugzilla suse_bug_reporter/
+
+Then, use the tool from the parent folder of where you have the repo cloned:
+
+$ PYTHONPATH=. python suse_bug_reporter/bin/susebugreporter.py [-h] {argument}
