@@ -3,13 +3,26 @@
 import sys
 import argparse
  
+# name of the main package
+pkg = 'suse_bug_reporter'
+
+# name of the util package
+u_pkg = 'util'
+
+
 def do_aid(args):
-    print "do_aid"
+    print 'do_aid'
     print args
 
 def do_gather(args):
-    print "Gathering relevant system information..."
-    print 
+    print 'Gathering relevant system information...'
+
+    exec 'from %s.%s import gather' % (pkg, u_pkg)
+    data = gather.gather_data(gather.gather_from)
+
+    import pprint
+    pprint.pprint(data)
+
  
 def main():
  
