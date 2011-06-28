@@ -12,6 +12,9 @@ u_pkg = 'util'
 # name of the aid user package
 a_pkg = 'aid_user'
 
+# relevance threshold for similar bug search
+rel_threshold = 0.75
+
 
 def do_aid(args):
 
@@ -37,10 +40,16 @@ def do_gather(args):
 def do_submit(args):
 
     # check login
-    # TODO
+    exec 'from %s.%s import login' % (pkg, u_pkg)
+    (username, password) = login.getCreds()
+
+    print "Connecting to Novell's Bugzilla..."
 
     # instantiate the bugzilla object
-    # TODO
+    exec 'from %s import bugzilla' % pkg
+    bugzillaURL = 'https://bugzilla.novell.com/xmlrpc.cgi'
+    cls = bugzilla.getBugzillaClassForURL(bugzillaURL)
+    bz = cls(url=bugzillaURL, user=username, password=password)
 
     exec 'from %s.%s import packageInfo' % (pkg, u_pkg)
 
@@ -66,7 +75,18 @@ def do_submit(args):
     summary = raw_input()
 
     # check similar bug reports through query by package and then match keywords
-    # TODO
+    bug_list = bz.query({'summary': name})
+
+    if len(bug_list) > 0:
+        import re
+        exec 'from %s.%s import sortByKeywords' % (pkg, u_pkg)
+        kw_list = re.findall(r'\w+', summary.lower())
+        if name in kw_list:
+            del kw_list[kw_list.index(name)]
+        bug_list = sortByKeywords.sortByKeywords(bug_list, kw_list, rel_threshold)
+
+    for i in bug_list:
+        print i.summary
 
     # gather the rest of the required data
     # TODO
