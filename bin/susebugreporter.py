@@ -15,6 +15,12 @@ a_pkg = 'aid_user'
 # relevance threshold for similar bug search
 rel_threshold = 0.75
 
+# imports - using exec temporarily, as this is a dev project and the names could change
+exec 'from %s import bugzilla' % pkg # import bugzilla
+exec 'from %s.%s import packageInfo' % (pkg, u_pkg) # from suse_bug_reporter import packageInfo
+
+
+
 
 def do_aid(args):
 
@@ -37,7 +43,7 @@ def do_gather(args):
     import pprint
     pprint.pprint(data)
 
-def do_submit(args):
+def initBugzillaAndPkgInfo():
 
     # check login
     exec 'from %s.%s import login' % (pkg, u_pkg)
@@ -46,21 +52,25 @@ def do_submit(args):
     print "Connecting to Novell's Bugzilla..."
 
     # instantiate the bugzilla object
-    exec 'from %s import bugzilla' % pkg
     bugzillaURL = 'https://bugzilla.novell.com/xmlrpc.cgi'
     cls = bugzilla.getBugzillaClassForURL(bugzillaURL)
     bz = cls(url=bugzillaURL, user=username, password=password)
 
-    exec 'from %s.%s import packageInfo' % (pkg, u_pkg)
+    return bz
 
+def do_submit(args):
+
+    bz = initBugzillaAndPkgInfo()
+
+    print ''
     print "If you don't know which package you want to file a bug to, you can"\
             " use the susebugreport aid command to get some help."
             
-    print "which is the package you want to file a report against?"
+    print "Which is the package you want to file a report against?"
     print "If you are not sure, you can just type the beginning of the name and"\
             " use a '*' to invoke globbing."
 
-    name = raw_input()
+    name = raw_input('Package name: ')
     pkg_info = packageInfo.getInfo(name)
 
     if pkg_info == None:
@@ -70,6 +80,7 @@ def do_submit(args):
 
     name = pkg_info[3]
 
+    print ''
     print "You have selected " +  name + "."
     print "Please enter the bug summary (should be concise!)"
     summary = raw_input()
@@ -85,17 +96,122 @@ def do_submit(args):
             del kw_list[kw_list.index(name)]
         bug_list = sortByKeywords.sortByKeywords(bug_list, kw_list, rel_threshold)
 
-    for i in bug_list:
-        print i.summary
+    print ''
+
+    if len(bug_list) > 0:
+        # if there are still relevant bugs in the list
+        # ask the user to modify a similar bug report or create a new one
+        print 'These are the similar bug reports found:'
+        for i in range(len(bug_list)):
+            print str(i) + '. ' + bug_list[i].summary
+        print ''
+        print 'Do you want to contribute to one of the bug reports above or'\
+                ' submit a new one?  yes (contribute)/no (new one)'
+        response = raw_input()
+        while response.lower() != 'yes' and response.lower() != 'no':
+            print 'Invalid answer: yes/no only!'
+            response = raw_input('Try again: ')
+
+        print ''
+        if response.lower() == 'yes':
+            print 'Which report do you want to contribute to?'
+            print 'Enter a number between 0 and ' + str(len(bug_list) - 1) + ':'
+
+            while True:
+                try:
+                    idx = int(raw_input('Number: '))
+                    assert idx >= 0
+                    assert idx < len(bug_list)
+                except (ValueError, AssertionError):
+                    print 'Not a valid index!'
+                else:
+                    break
+
+            bug = bug_list[idx]
+            print ''
+            print 'You have selected bug #' + str(bug.id) + ' with the summary '\
+                    + '"' + bug.summary + '"' + '.'
+            print 'You can contribute to it at this URL: ' + bug.url
+
+            sys.exit(0)
+
+    else:
+        print 'There were no similar bug reports found, you have to submit a new one.'
 
     # gather the rest of the required data
+    print ''
+    print 'Gathering necessary data..'
     # TODO
+    
 
     # submit the bug
     # TODO
 
 
+def do_query(args):
+
+    bz = initBugzillaAndPkgInfo()
+
+    name = args.package
+    pkg_info = packageInfo.getInfo(name)
+
+    if pkg_info == None:
+        # no pkg found
+        print "No package found, maybe try adding the '*' character?"
+        sys.exit(1)
+
+    name = pkg_info[3]
+
+    print ''
+    print "You have selected " +  name + "."
+    print "Please enter the bug summary (should be concise!)"
+    print "You can leave blank to get _all_ the bugs matching that package"
+    summary = raw_input()
+
+    # check similar bug reports through query by package and then match keywords
+    bug_list = bz.query({'summary': name})
+
+    if len(bug_list) > 0 and summary != '':
+        import re
+        exec 'from %s.%s import sortByKeywords' % (pkg, u_pkg)
+        kw_list = re.findall(r'\w+', summary.lower())
+        if name in kw_list:
+            del kw_list[kw_list.index(name)]
+        bug_list = sortByKeywords.sortByKeywords(bug_list, kw_list, rel_threshold)
+
+    print ''
+
+    if len(bug_list) > 0:
+        # if there are still relevant bugs in the list
+        
+        print 'These are the similar bug reports found:'
+        for i in range(len(bug_list)):
+            print str(i) + '. ' + bug_list[i].summary
+        print ''
+        
+        print 'Which report are you interested in?'
+        print 'Enter a number between 0 and ' + str(len(bug_list) - 1) + ':'
+
+        while True:
+            try:
+                idx = int(raw_input('Number: '))
+                assert idx >= 0
+                assert idx < len(bug_list)
+            except (ValueError, AssertionError):
+                print 'Not a valid index!'
+            else:
+                break
+
+        bug = bug_list[idx]
+        print ''
+        print 'You have selected bug #' + str(bug.id) + ' with the summary '\
+                + '"' + bug.summary + '"' + '.'
+        print 'You can contribute to it at this URL: ' + bug.url
+
+    sys.exit(0)
  
+
+
 def main():
  
     # creating the parser for the arguments
@@ -112,11 +228,13 @@ def main():
     submit = commands.add_parser('submit', help='submit a new bug')
     submit.set_defaults(func=do_submit)
 
+    query = commands.add_parser('query', help='get a list of reports')
+    query.set_defaults(func=do_query)
+    query.add_argument('package', type=str)
+
  
     args = parser.parse_args()
     args.func(args)
- 
-    #print(args)
  
  
 if __name__ == '__main__':
