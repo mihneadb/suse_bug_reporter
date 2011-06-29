@@ -115,10 +115,16 @@ def getInfo(package):
             if p%2 == 1:
                 print ''
 
-        idx = int(raw_input("\nWhich one? "))
-        while idx < 0 or idx >= length:
-	    print "Wrong index, please try again."
-	    idx = int(raw_input("\nWhich one? "))
+        print "\nWhich one? "
+        while True:
+            try:
+                idx = int(raw_input('Index number: '))
+                assert idx >= 0
+                assert idx < length
+            except (ValueError, AssertionError):
+        	    print "Invalid index, please try again."
+            else:
+                break
 	ret = ret[keys[idx]]
 
     return ret

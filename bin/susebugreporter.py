@@ -16,7 +16,7 @@ a_pkg = 'aid_user'
 rel_threshold = 0.75
 
 # imports - using exec temporarily, as this is a dev project and the names could change
-exec 'from %s import bugzilla' % pkg # import bugzilla
+import bugzilla
 exec 'from %s.%s import packageInfo' % (pkg, u_pkg) # from suse_bug_reporter import packageInfo
 
 
@@ -207,6 +207,9 @@ def do_query(args):
         print 'You have selected bug #' + str(bug.id) + ' with the summary '\
                 + '"' + bug.summary + '"' + '.'
         print 'You can contribute to it at this URL: ' + bug.url
+
+    else:
+        print "No bug report found. Why not create one?"
 
     sys.exit(0)
  
