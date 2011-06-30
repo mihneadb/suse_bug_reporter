@@ -1,8 +1,10 @@
 Usage instructions:
 
-You also need to get the python-bugzilla library:
-git clone git://gitorious.org/opensuse/python-bugzilla.git -b suse
+You need to get the python-bugzilla library:
+$ git clone git://gitorious.org/opensuse/python-bugzilla.git -b suse
 
+You also need osc:
+$ zypper in osc
 
 Then, use the tool from the parent folder of where you have the repos cloned:
 
