@@ -19,13 +19,15 @@ import cPickle
 from getpass import getpass
 
 auth_url = '/ICSLogin/auth-up'
+home = os.environ['HOME'] # path to home folder
+home += '/'
 
 
 def getCreds():
     # check to see if the credentials are already stored
     try:
         # load the file, decode the string and load the serialized object
-        creds_file = open('.sbr', 'r')
+        creds_file = open(home + '.sbr', 'r')
         data = creds_file.read()
         data = base64.b64decode(data)
         creds = cPickle.loads(data)
@@ -61,9 +63,10 @@ def getCreds():
             data = cPickle.dumps(creds)
             data = base64.b64encode(data)
 
-            creds_file = open('.sbr', 'w')
+            creds_file = open(home + '.sbr', 'w')
             creds_file.write(data)
             creds_file.close()
-        
+
         return (username, password)
 
+getCreds()
