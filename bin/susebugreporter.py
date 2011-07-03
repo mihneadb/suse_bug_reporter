@@ -2,6 +2,7 @@
  
 import sys
 import argparse
+import re
  
 # name of the main package
 pkg = 'suse_bug_reporter'
@@ -15,9 +16,11 @@ a_pkg = 'aid_user'
 # relevance threshold for similar bug search
 rel_threshold = 0.75
 
-# imports - using exec temporarily, as this is a dev project and the names could change
+# custom imports
 import bugzilla
-exec 'from %s.%s import packageInfo' % (pkg, u_pkg) # from suse_bug_reporter import packageInfo
+from suse_bug_reporter.util.console import print_list, yes_no, get_index
+from suse_bug_reporter.util import packageInfo, gather, login
+from suse_bug_reporter.util.sortByKeywords import sortByKeywords
 
 
 
@@ -37,7 +40,6 @@ def do_gather(args):
 
     print 'Gathering relevant system information...'
 
-    exec 'from %s.%s import gather' % (pkg, u_pkg)
     data = gather.gather_data(gather.gather_from)
 
     import pprint
@@ -46,7 +48,6 @@ def do_gather(args):
 def initBugzillaAndPkgInfo():
 
     # check login
-    exec 'from %s.%s import login' % (pkg, u_pkg)
     (username, password) = login.getCreds()
 
     print "Connecting to Novell's Bugzilla..."
@@ -89,44 +90,29 @@ def do_submit(args):
     bug_list = bz.query({'summary': name})
 
     if len(bug_list) > 0:
-        import re
-        exec 'from %s.%s import sortByKeywords' % (pkg, u_pkg)
         kw_list = re.findall(r'\w+', summary.lower())
         if name in kw_list:
             del kw_list[kw_list.index(name)]
-        bug_list = sortByKeywords.sortByKeywords(bug_list, kw_list, rel_threshold)
+        bug_list = sortByKeywords(bug_list, kw_list, rel_threshold)
 
     print ''
 
     if len(bug_list) > 0:
         # if there are still relevant bugs in the list
         # ask the user to modify a similar bug report or create a new one
-        print 'These are the similar bug reports found:'
-        for i in range(len(bug_list)):
-            print str(i) + '. ' + bug_list[i].summary
+        print_list(bug_list, attr='summary',
+                msg='These are the similar bug reports found')
+
         print ''
-        print 'Do you want to contribute to one of the bug reports above or'\
+
+        msg = 'Do you want to contribute to one of the bug reports above or'\
                 ' submit a new one?  yes (contribute)/no (new one)'
-        response = raw_input()
-        while response.lower() != 'yes' and response.lower() != 'no':
-            print 'Invalid answer: yes/no only!'
-            response = raw_input('Try again: ')
+        yes = yes_no(msg, yes='contribute', no='submit new')
 
         print ''
-        if response.lower() == 'yes':
-            print 'Which report do you want to contribute to?'
-            print 'Enter a number between 0 and ' + str(len(bug_list) - 1) + ':'
-
-            while True:
-                try:
-                    idx = int(raw_input('Number: '))
-                    assert idx >= 0
-                    assert idx < len(bug_list)
-                except (ValueError, AssertionError):
-                    print 'Not a valid index!'
-                else:
-                    break
-
+        if yes:
+            idx = get_index(len(bug_list),
+                    msg='Which report do you want to contribute to?')
             bug = bug_list[idx]
             print ''
             print 'You have selected bug #' + str(bug.id) + ' with the summary '\
@@ -169,39 +155,27 @@ def do_query(args):
     summary = raw_input()
 
     # check similar bug reports through query by package and then match keywords
+    print ''
+    print 'Searching Bugzilla...'
     bug_list = bz.query({'summary': name})
 
     if len(bug_list) > 0 and summary != '':
-        import re
-        exec 'from %s.%s import sortByKeywords' % (pkg, u_pkg)
         kw_list = re.findall(r'\w+', summary.lower())
         if name in kw_list:
             del kw_list[kw_list.index(name)]
-        bug_list = sortByKeywords.sortByKeywords(bug_list, kw_list, rel_threshold)
+        bug_list = sortByKeywords(bug_list, kw_list, rel_threshold)
 
     print ''
 
     if len(bug_list) > 0:
         # if there are still relevant bugs in the list
         
-        print 'These are the similar bug reports found:'
-        for i in range(len(bug_list)):
-            print str(i) + '. ' + bug_list[i].summary
+        print_list(bug_list, attr='summary',
+                msg='These are the similar bug reports found:')
         print ''
         
-        print 'Which report are you interested in?'
-        print 'Enter a number between 0 and ' + str(len(bug_list) - 1) + ':'
-
-        while True:
-            try:
-                idx = int(raw_input('Number: '))
-                assert idx >= 0
-                assert idx < len(bug_list)
-            except (ValueError, AssertionError):
-                print 'Not a valid index!'
-            else:
-                break
-
+        idx = get_index(len(bug_list),
+                msg='Which report are you interested in?')
         bug = bug_list[idx]
         print ''
         print 'You have selected bug #' + str(bug.id) + ' with the summary '\
