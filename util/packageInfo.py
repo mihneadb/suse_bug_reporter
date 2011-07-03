@@ -7,6 +7,8 @@ import urllib2
 import osc.conf
 import osc.core
 
+from suse_bug_reporter.util.console import yes_no, print_list, get_index
+
 try:
     from xml.etree import cElementTree as ET
 except ImportError:
@@ -108,24 +110,12 @@ def getInfo(package):
 
     elif length > 1:
         # there are more than one packages that match, the user must pick one
-        print "There are more than one packages that match your search"\
-                ", please pick one"
-        for p in range(length):
-            print '%4d %40s\t' % (p, keys[p]),
-            if p%2 == 1:
-                print ''
-
-        print "\nWhich one? "
-        while True:
-            try:
-                idx = int(raw_input('Index number: '))
-                assert idx >= 0
-                assert idx < length
-            except (ValueError, AssertionError):
-        	    print "Invalid index, please try again."
-            else:
-                break
-	ret = ret[keys[idx]]
+        msg = 'There are more than one packages that match your search'\
+                ', please pick one'
+        print_list(keys, msg=msg, columns=2)
+        print ''
+        idx = get_index(length, 'Which one?')
+        ret = ret[keys[idx]]
 
     return ret
 
