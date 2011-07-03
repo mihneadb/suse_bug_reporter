@@ -1,5 +1,5 @@
 # FSM_def.py - a class definition module for suse bug reporting tool for the
-# Finit State Machine used to get bug data from the user
+# Finite State Machine used to get bug data from the user
 #
 # Copyright (C) 2009 Novell Inc.
 # Author: Michal Vyskocil <mvyskocil@suse.cz>
