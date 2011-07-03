@@ -69,4 +69,3 @@ def getCreds():
 
         return (username, password)
 
-getCreds()
