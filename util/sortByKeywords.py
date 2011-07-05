@@ -4,6 +4,7 @@ import re
 import sys
 from operator import itemgetter
 
+
 def sortByKeywords(bug_list, keyword_list, rel_threshold):
     ''' scans the strings for the keywords and computes a relevance for each
     string by the following formula: if the keyword is matched exactly, it adds
@@ -15,6 +16,10 @@ def sortByKeywords(bug_list, keyword_list, rel_threshold):
     ! it only returns the bugs with the relevance above the
     max_relevance * rel_threshold, so the latter must be a float between
     0 and 1 '''
+
+    # ignored words; len() has to be >= 3
+    IGNORED = ('for',)
+
 
     # make sure the threshold makes sense
     if type(rel_threshold) != int and type(rel_threshold) != float:
@@ -32,6 +37,8 @@ def sortByKeywords(bug_list, keyword_list, rel_threshold):
         s = re.findall(r'\w+', s)
         sum = 0
         for keyword in keyword_list:
+            if (len(keyword) < 3) or (keyword in IGNORED):
+                continue
             if keyword in s:
                 # the keyword is matched exactly
                 sum += len(keyword) * 2
