@@ -13,6 +13,14 @@
 __version__ = '0.1'
 
 
+import sys
+import logging
+
+
+logging.basicConfig()
+log = logging.getLogger('suse_bug_reporter')
+
+
 class FSM(object):
     """Finite State Machine implementation. It could be used for implementing
     of an interactive workflow, without a mess with complicated conditions.
