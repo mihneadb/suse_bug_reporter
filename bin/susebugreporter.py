@@ -3,6 +3,7 @@
 import sys
 import argparse
 import re
+import pprint
  
 # name of the main package
 pkg = 'suse_bug_reporter'
@@ -21,6 +22,7 @@ import bugzilla
 from suse_bug_reporter.util.console import print_list, yes_no, get_index
 from suse_bug_reporter.util import packageInfo, gather, login
 from suse_bug_reporter.util.sortByKeywords import sortByKeywords
+from suse_bug_reporter.util.bugReport import BugReport
 
 
 
@@ -42,7 +44,6 @@ def do_gather(args):
 
     data = gather.gather_data(gather.gather_from)
 
-    import pprint
     pprint.pprint(data)
 
 def initBugzillaAndPkgInfo():
@@ -72,11 +73,14 @@ def do_submit(args):
             " use a '*' to invoke globbing."
 
     name = raw_input('Package name: ')
+    if name.strip() == '':
+        print 'Package name cannot be blank!'
+        sys.exit(1)
     pkg_info = packageInfo.getInfo(name)
 
     if pkg_info == None:
         # no pkg found
-        print "No package found, maybe try adding the '*' character?"
+        print "No installed package found, maybe try adding the '*' character?"
         sys.exit(1)
 
     name = pkg_info[3]
@@ -84,7 +88,7 @@ def do_submit(args):
     print ''
     print "You have selected " +  name + "."
     print "Please enter the bug summary (should be concise!)"
-    summary = raw_input()
+    summary = raw_input('--> ')
 
     # check similar bug reports through query by package and then match keywords
     bug_list = bz.query({'summary': name})
@@ -124,14 +128,17 @@ def do_submit(args):
     else:
         print 'There were no similar bug reports found, you have to submit a new one.'
 
-    # gather the rest of the required data
+    # gather the rest of the required data and submit the bug
     print ''
-    print 'Gathering necessary data..'
-    # TODO
+    try:
+        automat = BugReport(bz=bz, pkg=name, pkg_info=pkg_info, summary=summary)
+        automat.main()
+    except EOFError, eofe:
+        return 0
+    except (KeyboardInterrupt, SystemExit):
+        return 1
     
-
-    # submit the bug
-    # TODO
+    return 0
 
 
 def do_query(args):
@@ -139,6 +146,9 @@ def do_query(args):
     bz = initBugzillaAndPkgInfo()
 
     name = args.package
+    if name.strip() == '':
+        print 'Package name cannot be blank!'
+        sys.exit(1)
     pkg_info = packageInfo.getInfo(name)
 
     if pkg_info == None:
