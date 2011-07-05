@@ -231,6 +231,10 @@ def getAssignedPersons(pkg_info):
 
     (version, apiurl, project, package) = pkg_info  
 
+    if project == 'Packman':
+        print 'Packman is not supported.'
+        sys.exit(1)
+
     prj_data = getProjectData(apiurl, project)
     if prj_data == None:
         print "Project %s doesn't exist!" % (project)
