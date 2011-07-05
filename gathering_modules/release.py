@@ -17,11 +17,11 @@ def gather_from_release():
 
     # split the output and get the version number and the arch
     output = output.split()
-    ver = output[1]
+    product = output[0] + ' ' + output[1]
     # because the arch string contains parantheses, I also remove them
-    arch = output[2].replace('(', '').replace(')', '')
+    arch = output[2].replace('(', '').replace(')', '').replace('_', '-')
 
-    release = (full_name, ver, arch)
+    release = (product, arch, full_name)
     return release
 
 if __name__ == '__main__':
