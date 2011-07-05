@@ -31,20 +31,22 @@ class BugReport(FSM_def.FSM):
 
 
     def getHeader(self):
-        return """Summary: %s
-            Product: %s
-            Platform: %s
-            Component: %s
-            Severity: %s
-            Assigned to: %s
-            CC: %s""" % (self.data['severity'],
-                    self.data['product'],
-                    self.data['rep_platform'],
-                    self.data['component'],
-                    self.data['severity'],
-                    self.data['assigned_to'],
-                    ', '.join(self.data['cc'])
-                    )
+        return """Package: %s
+Summary: %s
+Product: %s
+Platform: %s
+Component: %s
+Severity: %s
+Assigned to: %s
+CC: %s""" % (self.data['package'],
+        self.data['summary'],
+        self.data['product'],
+        self.data['rep_platform'],
+        self.data['component'],
+        self.data['severity'],
+        self.data['assigned_to'],
+        ', '.join(self.data['cc'])
+        )
 
 
     def save(self, file_name=None):
