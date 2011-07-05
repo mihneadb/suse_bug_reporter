@@ -251,11 +251,12 @@ CC: %s""" % (self.data['package'],
 
 
     def do_ASK_SUBMIT(self):
-        print ''
+        print '--------------------------------------------------------------'
         print ''
         print self.getHeader()
         print ''
         print self.data['description']
+        print '--------------------------------------------------------------'
 
         yes = console.yes_no('Do you want to submit this report? Yes/No')
         if yes:
