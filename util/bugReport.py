@@ -257,6 +257,7 @@ CC: %s""" % (self.data['package'],
         print ''
         print self.data['description']
         print '--------------------------------------------------------------'
+        print ''
 
         yes = console.yes_no('Do you want to submit this report? Yes/No')
         if yes:
