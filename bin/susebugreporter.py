@@ -4,6 +4,7 @@ import sys
 import argparse
 import re
 import pprint
+import osc.conf
  
 # name of the main package
 pkg = 'suse_bug_reporter'
@@ -46,7 +47,7 @@ def do_gather(args):
 
     pprint.pprint(data)
 
-def initBugzillaAndPkgInfo():
+def initBugzilla():
 
     # check login
     (username, password) = login.getCreds()
@@ -62,7 +63,15 @@ def initBugzillaAndPkgInfo():
 
 def do_submit(args):
 
-    bz = initBugzillaAndPkgInfo()
+    # init osc
+    try:
+        osc.conf.get_config()
+    except osc.oscerr.NoConfigfile:
+        print 'You have to have a valid .oscrc file. Please do so by running osc.'
+        sys.exit(1)
+
+    # init bugzilla
+    bz = initBugzilla()
 
     print ''
     print "If you don't know which package you want to file a bug to, you can"\
