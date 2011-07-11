@@ -227,7 +227,11 @@ def getAssignedPersons(pkg_info):
     with the input_package '''
 
     #init
-    osc.conf.get_config()
+    try:
+        osc.conf.get_config()
+    except osc.oscerr.NoConfigfile:
+        print 'You have to have a valid .oscrc file. Please do so by running osc.'
+        sys.exit(1)
 
     (version, apiurl, project, package) = pkg_info  
 
