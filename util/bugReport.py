@@ -5,7 +5,7 @@ import os
 import pprint
 
 from suse_bug_reporter.gathering_modules.release import gather_from_release
-from suse_bug_reporter.util import console, packageInfo
+from suse_bug_reporter.util import console, packageInfo, gather
 from suse_bug_reporter.util import FSM_def
 
 
@@ -47,6 +47,11 @@ CC: %s""" % (self.data['package'],
         self.data['assigned_to'],
         ', '.join(self.data['cc'])
         )
+
+
+    def getSysData(self):
+        data = gather.gather_data(gather.gather_from)
+        return pprint.pformat(data)
 
 
     def save(self, file_name=None):
@@ -247,6 +252,10 @@ CC: %s""" % (self.data['package'],
     def do_GET_DESCRIPTION(self):
         print ''
         self.data['description'] = console.edit_message(self.getHeader())
+        yes = console.yes_no('Do you want to add an automatically gathered'\
+                ' system description? Yes/No')
+        if yes:
+            self.data['description'] += '\n' + self.getSysData() + '\n'
         return 'ASK_SUBMIT'
 
 
