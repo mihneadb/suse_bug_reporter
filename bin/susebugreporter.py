@@ -1,11 +1,11 @@
 #!/usr/bin/env python
- 
+
 import sys
 import argparse
 import re
 import pprint
 import osc.conf
- 
+
 # name of the main package
 pkg = 'suse_bug_reporter'
 
@@ -20,7 +20,7 @@ rel_threshold = 0.75
 
 # custom imports
 import bugzilla
-from suse_bug_reporter.util.console import print_list, yes_no, get_index
+from suse_bug_reporter.util.console import print_list, yes_no, get_index, choice
 from suse_bug_reporter.util import packageInfo, gather, login
 from suse_bug_reporter.util.sortByKeywords import sortByKeywords
 from suse_bug_reporter.util.bugReport import BugReport
@@ -76,7 +76,7 @@ def do_submit(args):
     print ''
     print "If you don't know which package you want to file a bug to, you can"\
             " use the susebugreport aid command to get some help."
-            
+
     print "Which is the package you want to file a report against?"
     print "If you are not sure, you can just type the beginning of the name and"\
             " use a '*' to invoke globbing."
@@ -120,10 +120,10 @@ def do_submit(args):
 
         msg = 'Do you want to contribute to one of the bug reports above or'\
                 ' submit a new one?  yes (contribute)/no (new one)'
-        yes = yes_no(msg, yes='contribute', no='submit new')
+        idx = choice(msg, ('contribute', 'new'))
 
         print ''
-        if yes:
+        if idx == 0:
             idx = get_index(len(bug_list),
                     msg='Which report do you want to contribute to?')
             bug = bug_list[idx]
@@ -146,7 +146,7 @@ def do_submit(args):
         return 0
     except (KeyboardInterrupt, SystemExit):
         return 1
-    
+
     return 0
 
 
@@ -188,11 +188,11 @@ def do_query(args):
 
     if len(bug_list) > 0:
         # if there are still relevant bugs in the list
-        
+
         print_list(bug_list, attr='summary',
                 msg='These are the similar bug reports found:')
         print ''
-        
+
         idx = get_index(len(bug_list),
                 msg='Which report are you interested in?')
         bug = bug_list[idx]
@@ -205,19 +205,19 @@ def do_query(args):
         print "No bug report found. Why not create one?"
 
     sys.exit(0)
- 
+
 
 
 def main():
- 
+
     # creating the parser for the arguments
     parser = argparse.ArgumentParser(description='Bugzilla interactions')
     commands = parser.add_subparsers()
-    
+
     aid = commands.add_parser('aid', help='aid users to find the relevant app')
     aid.set_defaults(func=do_aid)
     aid.add_argument('choice', type=str, choices=['find_app'])
-    
+
     gather = commands.add_parser('gather', help='gather relevant system info')
     gather.set_defaults(func=do_gather)
 
@@ -228,10 +228,10 @@ def main():
     query.set_defaults(func=do_query)
     query.add_argument('package', type=str)
 
- 
+
     args = parser.parse_args()
     args.func(args)
- 
- 
+
+
 if __name__ == '__main__':
     main()

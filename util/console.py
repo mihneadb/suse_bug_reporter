@@ -22,19 +22,36 @@ def print_list(a_list, attr=None, columns=1, msg=None):
                 a_list[i] if attr == None else getattr(a_list[i], attr)),
         if columns == 1 or i % 2 == 1:
             print ''
-       
+
     print ''
 
 
-def reply(msg, *options):
-    ''' prompts the user with a multiple choice question
+def choice(msg, *options):
+    ''' prompts the user with a multiple choice question;
         if the options passed are for example 'contribute' and 'new',
         it will show '[c]ontribute' and '[n]' and it will only accept
-        'c' and 'n' (or their uppercase equivalents) as valid input '''
+        'c' and 'n' (or their uppercase equivalents) as valid input
 
-        print msg
-        opts = list()
-        for opt in options:
+        returns the index of the selected option from the argument tuple '''
+
+    print msg
+
+    # generate the list of valid inputs and print the choices
+    opts = []
+    for opt in options:
+        firstChar = opt[0].lower()
+        opts.append(firstChar)
+        print '[' + firstChar + ']' + opt[1:] + ' / ',
+
+    # get (and check) the input
+    resp = raw_input('Answer: ')
+    while resp.lower() not in opts:
+        print 'Invalid answer!'
+        resp = raw_input('Try again: ')
+
+    # get the index and return it
+    return opts.index(resp.lower())
+
 
 def yes_no(msg, yes=None, no=None):
     ''' prompts the user with a yes / no question and returns True or False '''
@@ -98,7 +115,7 @@ def get_editor():
 def edit_message(template, prefix="", resp=None):
     ''' Author: Michal Vyskocil <mvyskocil@suse.cz> '''
     if resp:    return prefix + resp
-    
+
     delim = '#Write a description below.'
 
     editor = get_editor()
