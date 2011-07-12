@@ -113,7 +113,7 @@ def do_submit(args):
     if len(bug_list) > 0:
         # if there are still relevant bugs in the list
         # ask the user to modify a similar bug report or create a new one
-        print_list(bug_list, attr=('summary', 'id'),
+        print_list(bug_list, attr_list=('summary', 'id'),
                 msg='These are the similar bug reports found')
 
         print ''
@@ -189,7 +189,7 @@ def do_query(args):
     if len(bug_list) > 0:
         # if there are still relevant bugs in the list
 
-        print_list(bug_list, attr=('summary', 'id'),
+        print_list(bug_list, attr_list=('summary', 'id'),
                 msg='These are the similar bug reports found:')
         print ''
 
