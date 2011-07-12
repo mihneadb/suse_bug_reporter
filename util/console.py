@@ -158,7 +158,7 @@ def edit_message(template, prefix="", resp=None):
 
         else:
             input = raw_input('Log message unchanged or not specified\n'
-                              'a)bort, c)ontinue, e)dit: ', 'a')
+                              'a)bort, c)ontinue, e)dit: ')
             if input in 'aA':
                 os.unlink(filename)
                 sys.exit(1)
