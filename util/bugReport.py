@@ -51,7 +51,7 @@ CC: %s""" % (self.data['package'],
 
     def getSysData(self):
         data = gather.gather_data(gather.gather_from)
-        return pprint.pformat(data)
+        return 'Automatically gathered system data:\n' + pprint.pformat(data)
 
 
     def save(self, file_name=None):
@@ -267,7 +267,7 @@ CC: %s""" % (self.data['package'],
         yes = console.yes_no('Do you want to add an automatically gathered'\
                 ' system description? Yes/No')
         if yes:
-            self.data['description'] += '\n' + self.getSysData() + '\n'
+            self.data['description'] += '\n\n' + self.getSysData() + '\n'
         return 'ASK_SUBMIT'
 
 
