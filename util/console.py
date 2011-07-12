@@ -10,25 +10,23 @@ import tempfile
 def print_list(a_list, attr_list=None, columns=1, msg=None):
     ''' formats the options list on one or two columns with an index
     associated to each entry;
-    Works also for objects that have an attribute to be printed '''
+    Works also for objects that have attributes to be printed '''
 
     assert columns == 1 or columns == 2
 
     if msg != None:
         print msg
 
-    s = ''
-    if attr_list != None:
-        for attr in attr_list:
-            if attr == 'id':
-                s += '(#' + str(getattr(a_list[i], attr)) + ') '
-                continue
-            s += str(getattr(a_list[i], attr)) + ' '
-
-
     for i in range(len(a_list)):
-        print '%3d. %-40s' % (i,
-                a_list[i] if attr == None else getattr(a_list[i], attr)),
+        s = ''
+        if attr_list != None:
+            for attr in attr_list:
+                if attr == 'id':
+                    s += '(#' + str(getattr(a_list[i], attr)) + ') '
+                    continue
+                s += str(getattr(a_list[i], attr)) + ' '
+
+        print '%3d. %-40s' % (i, a_list[i] if attr_list == None else s),
         if columns == 1 or i % 2 == 1:
             print ''
 
