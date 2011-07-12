@@ -97,9 +97,9 @@ CC: %s""" % (self.data['package'],
 
     def do_ASK_PRODUCT_PLATFORM(self):
         print ''
-        msg = 'Enter the name + version of the openSUSE product, or enter s'\
+        print 'Enter the name + version of the openSUSE product, or enter s'\
                 ' if you want to  select it from a list.'
-        ans = raw_input(msg)
+        ans = raw_input('Answer: ')
 
         if ans in ('s', 'S'):
             return 'SELECT_PRODUCT_PLATFORM'
@@ -131,7 +131,7 @@ CC: %s""" % (self.data['package'],
         idx = console.get_index(len(product_list), msg='Which one?')
 
         self.data['product'] = product_list[idx]
-        return 'do_GET_PLATFORM'
+        return 'GET_PLATFORM'
 
 
     def do_TEST_PRODUCT_PLATFORM(self):
