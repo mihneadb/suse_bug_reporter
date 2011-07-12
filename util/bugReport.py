@@ -111,7 +111,7 @@ CC: %s""" % (self.data['package'],
     def do_GET_PLATFORM(self):
         print ''
         aux1, platform, aux2 = gather_from_release()
-        print = 'Enter your platform. Hint: %s was found.' % platform
+        print 'Enter your platform. Hint: %s was found.' % platform
 
         ans = console.custom_input(msg='Answer: ', preselect=platform)
         self.data['rep_platform'] = ans
