@@ -26,6 +26,16 @@ def print_list(a_list, attr=None, columns=1, msg=None):
     print ''
 
 
+def reply(msg, *options):
+    ''' prompts the user with a multiple choice question
+        if the options passed are for example 'contribute' and 'new',
+        it will show '[c]ontribute' and '[n]' and it will only accept
+        'c' and 'n' (or their uppercase equivalents) as valid input '''
+
+        print msg
+        opts = list()
+        for opt in options:
+
 def yes_no(msg, yes=None, no=None):
     ''' prompts the user with a yes / no question and returns True or False '''
 
