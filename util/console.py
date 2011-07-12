@@ -7,7 +7,7 @@ import sys
 import tempfile
 
 
-def print_list(a_list, attr=None, columns=1, msg=None):
+def print_list(a_list, attr_list=None, columns=1, msg=None):
     ''' formats the options list on one or two columns with an index
     associated to each entry;
     Works also for objects that have an attribute to be printed '''
@@ -16,6 +16,15 @@ def print_list(a_list, attr=None, columns=1, msg=None):
 
     if msg != None:
         print msg
+
+    s = ''
+    if attr_list != None:
+        for attr in attr_list:
+            if attr == 'id':
+                s += '(#' + str(getattr(a_list[i], attr)) + ') '
+                continue
+            s += str(getattr(a_list[i], attr)) + ' '
+
 
     for i in range(len(a_list)):
         print '%3d. %-40s' % (i,
