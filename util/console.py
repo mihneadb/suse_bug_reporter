@@ -26,7 +26,7 @@ def print_list(a_list, attr_list=None, columns=1, msg=None):
                     continue
                 s += str(getattr(a_list[i], attr)) + ' '
 
-        print '%3d. %-40s' % (i, a_list[i] if attr_list == None else s),
+        print '%3d. %-40s' % (i + 1, a_list[i] if attr_list == None else s),
         if columns == 1 or i % 2 == 1:
             print ''
 
@@ -89,19 +89,19 @@ def get_index(length, msg=None):
     if msg != None:
         print msg
 
-    print 'Enter a valid index number between 0 and ' + str(length - 1) + ':'
+    print 'Enter a valid index number between 1 and ' + str(length) + ':'
 
     while True:
         try:
             idx = int(raw_input('Index: '))
-            assert idx >= 0
-            assert idx < length
+            assert idx > 0
+            assert idx <= length
         except (ValueError, AssertionError):
             print 'Not a valid index, try again.'
         else:
             break
 
-    return idx
+    return idx - 1
 
 
 def custom_input(msg='', preselect=''):
