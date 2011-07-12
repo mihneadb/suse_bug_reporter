@@ -175,6 +175,7 @@ CC: %s""" % (self.data['package'],
 
     def do_LOAD_ASSIGNEE(self):
         print ''
+        print 'Getting assignee & cc list, please wait...'
         assignee, cc = packageInfo.getAssignedPersons(self.pkg_info)
 
         print 'This/these address(es) were found:'
@@ -184,7 +185,8 @@ CC: %s""" % (self.data['package'],
 
         yes = console.yes_no('Do you want to change the assignee? Yes/No')
         if yes:
-            assignee = console.custom_input('New assignee:', preselect=assignee)
+            assignee = console.custom_input('New assignee: ', preselect=assignee)
+            print 'Chose %s as assignee.' % assignee
 
         print ''
         yes = console.yes_no('Do you want to remove anybody from the cc list'\
@@ -199,12 +201,15 @@ CC: %s""" % (self.data['package'],
         print ''
         yes = console.yes_no('Do you want to add another cc(s)? Yes/No')
         if yes:
+            print ''
             print 'Enter their e-mail addresses, one at a time.'
             print "To stop, enter something that does not contain '@'."
             ans = raw_input('Cc: ')
             while '@' in ans:
                 cc.append(ans)
                 ans = raw_input('Cc: ')
+            print 'new cc list: '
+            pprint.pprint(cc)
 
         self.data['assigned_to'] = assignee
         self.data['cc'] = cc
@@ -242,11 +247,7 @@ CC: %s""" % (self.data['package'],
                 )
 
         print 'Please describe the impact of the bug, choose a severity for the issue.'
-        console.print_list(SEVERITIES, msg='Available severities:')
-
-        yes = console.yes_no('Would you like to see their descriptions? Yes/No')
-        if yes:
-            console.print_list(DESCRIPTIONS)
+        console.print_list(DESCRIPTIONS, msg='Available severities:')
 
         print ''
         idx = console.get_index(len(SEVERITIES), 'Which one?')
