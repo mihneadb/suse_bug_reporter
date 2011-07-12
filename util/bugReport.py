@@ -97,8 +97,8 @@ CC: %s""" % (self.data['package'],
 
     def do_ASK_PRODUCT_PLATFORM(self):
         print ''
-        print 'Enter the name + version of the openSUSE product, or enter s'\
-                ' if you want to  select it from a list.'
+        print "Enter the name + version of the openSUSE product, or enter 's'"\
+                " if you want to  select it from a list."
         ans = raw_input('Answer: ')
 
         if ans in ('s', 'S'):
