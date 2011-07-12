@@ -41,7 +41,9 @@ def choice(msg, *options):
     for opt in options:
         firstChar = opt[0].lower()
         opts.append(firstChar)
-        print '[' + firstChar + ']' + opt[1:] + ' / ',
+        print '[' + firstChar + ']' + opt[1:] + ' ',
+
+    print ''
 
     # get (and check) the input
     resp = raw_input('Answer: ')
