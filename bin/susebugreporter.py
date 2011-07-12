@@ -120,7 +120,7 @@ def do_submit(args):
 
         msg = 'Do you want to contribute to one of the bug reports above or'\
                 ' submit a new one?  yes (contribute)/no (new one)'
-        idx = choice(msg, ('contribute', 'new'))
+        idx = choice(msg, 'contribute', 'new')
 
         print ''
         if idx == 0:
