@@ -22,7 +22,7 @@ class BugReport(FSM_def.FSM):
         self.data['package'] = pkg
         self.pkg_info = pkg_info
         self.data['summary'] = summary
-    
+
 
     def _resp(self, suffix=''):
         if self.data:
@@ -77,7 +77,7 @@ CC: %s""" % (self.data['package'],
     def do_START(self):
         print ''
         print 'Starting the collecting data for the report process..'
-        
+
         return "PRE_ASK_PRODUCT_PLATFORM"
 
 
@@ -112,7 +112,7 @@ CC: %s""" % (self.data['package'],
         print ''
         aux1, platform, aux2 = gather_from_release()
         msg = 'Enter your platform. Hint: %s was found.' % platform
-        
+
         ans = console.custom_input(msg=msg, preselect=platform)
         data['rep_platform'] = ans
 
@@ -186,6 +186,17 @@ CC: %s""" % (self.data['package'],
         if yes:
             assignee = console.custom_input('New assignee:', preselect=assignee)
 
+        print ''
+        yes = console.yes_no('Do you want to remove anybody from the cc list'\
+                             ' (one at a time)? Yes/No')
+        while yes:
+            console.print_list(cc, msg='Available choices')
+            idx = console.get_index(len(cc), msg='Which one?')
+            del cc[idx]
+            print ''
+            yes = console.yes_no('Do you want to remove another person? Yes/No')
+
+        print ''
         yes = console.yes_no('Do you want to add another cc(s)? Yes/No')
         if yes:
             print 'Enter their e-mail addresses, one at a time.'
@@ -205,7 +216,7 @@ CC: %s""" % (self.data['package'],
         print ''
         if self.data['summary'].strip() == '':
             return 'GET_SUMMARY'
-        
+
         return 'GET_SEVERITY'
 
 
