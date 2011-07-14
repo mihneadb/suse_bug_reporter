@@ -21,7 +21,10 @@ class BugReport(FSM_def.FSM):
         self.data = data
         self.pkg = pkg
         self.pkg_info = pkg_info
-        self.data['summary'] = summary
+        if pkg not in summary:
+            self.data['summary'] = '[' + pkg + '] ' + summary
+        else:
+            self.data['summary'] = summary
         self.prj = pkg_info[2]
         self.ver = pkg_info[0]
         self.apiurl = pkg_info[1]
@@ -74,8 +77,6 @@ CC: %s""" % (self.pkg,
         else:
             fd = open(file_name, 'w')
 
-        os.write(fd, self.getHeader())
-        os.write(fd, '\n\n')
         os.write(fd, self.data['description'])
         os.write(fd, '\n')
         os.close(fd)
@@ -297,7 +298,7 @@ CC: %s""" % (self.pkg,
 
     def do_GET_DESCRIPTION(self):
         print ''
-        self.data['description'] = console.edit_message(self.getHeader())
+        self.data['description'] = self.getHeader() + '\n\n' + console.edit_message(self.getHeader())
         yes = console.yes_no('Do you want to add an automatically gathered'\
                 ' system description? Yes/No')
         if yes:
@@ -307,8 +308,6 @@ CC: %s""" % (self.pkg,
 
     def do_ASK_SUBMIT(self):
         print '--------------------------------------------------------------'
-        print ''
-        print self.getHeader()
         print ''
         print self.data['description']
         print '--------------------------------------------------------------'
