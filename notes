@@ -1,0 +1,6 @@
+// watching for crashes
+
+$ ulimit -c unlimited (temporary)
+# echo "*     soft    core    unlimited" >> /etc/security/limits.conf
+# echo "/tmp/core.%e.%p" > /proc/sys/kernel/core_pattern
+
