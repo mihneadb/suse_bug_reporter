@@ -162,10 +162,31 @@ CC: %s""" % (self.data['package'],
 
         # list is already sorted
         console.print_list(comp_list, columns=2, msg='Available components:')
+        print ''
+        try:
+            idx = comp_list.index('Security')
+            print "If it's a security problem, please select index %d (Security)." % (idx + 1)
+        except ValueError:
+            pass
         idx = console.get_index(len(comp_list), msg='Which one?')
 
         print 'Using component %s.' % comp_list[idx]
         self.data['component'] = comp_list[idx]
+
+        if self.data['component'] == 'Security':
+            return 'GET_SECURITY_PREFIX'
+
+        return 'GET_VERSION'
+
+
+    def do_GET_SECURITY_PREFIX(self):
+        print ''
+        msg = "Is this needed to be fixed now, or on the next main update?"
+        idx = console.choice(msg, 'urgently', 'next_update')
+        if idx == 0:
+            self.data['summary'] = 'VUL-0 ' + self.data['summary']
+        else:
+            self.data['summary'] = 'VUL-1 ' + self.data['summary']
 
         return 'GET_VERSION'
 
@@ -186,6 +207,9 @@ CC: %s""" % (self.data['package'],
         print ''
         print 'Getting assignee & cc list, please wait...'
         assignee, cc = packageInfo.getAssignedPersons(self.pkg_info)
+
+        if self.data['component'] == 'Security':
+            cc.append('security-team@suse.de')
 
         print 'This/these address(es) were found:'
         print 'assignee: ' + assignee
