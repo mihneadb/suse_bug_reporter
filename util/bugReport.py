@@ -19,12 +19,12 @@ class BugReport(FSM_def.FSM):
 
         self.bz = bz
         self.data = data
-        self.data['package'] = pkg
+        self.pkg = pkg
         self.pkg_info = pkg_info
         self.data['summary'] = summary
-        self.data['project'] = pkg_info[2]
+        self.prj = pkg_info[2]
         self.ver = pkg_info[0]
-        self.data['apiurl'] = pkg_info[1]
+        self.apiurl = pkg_info[1]
 
 
     def _resp(self, suffix=''):
@@ -44,10 +44,10 @@ Platform: %s
 Component: %s
 Severity: %s
 Assigned to: %s
-CC: %s""" % (self.data['package'],
-        self.data['project'],
+CC: %s""" % (self.pkg,
+        self.prj,
         self.ver,
-        self.data['apiurl'],
+        self.apiurl,
         self.data['summary'],
         self.data['product'],
         self.data['rep_platform'],
@@ -222,14 +222,15 @@ CC: %s""" % (self.data['package'],
             print 'Chose %s as assignee.' % assignee
 
         print ''
-        yes = console.yes_no('Do you want to remove anybody from the cc list'\
-                             ' (one at a time)? Yes/No')
-        while yes:
-            console.print_list(cc, msg='Available choices')
-            idx = console.get_index(len(cc), msg='Which one?')
-            del cc[idx]
-            print ''
-            yes = console.yes_no('Do you want to remove another person? Yes/No')
+        if len(cc) > 0:
+            yes = console.yes_no('Do you want to remove anybody from the cc list'\
+                                 ' (one at a time)? Yes/No')
+            while yes:
+                console.print_list(cc, msg='Available choices')
+                idx = console.get_index(len(cc), msg='Which one?')
+                del cc[idx]
+                print ''
+                yes = console.yes_no('Do you want to remove another person? Yes/No')
 
         print ''
         yes = console.yes_no('Do you want to add another cc(s)? Yes/No')
@@ -331,7 +332,9 @@ CC: %s""" % (self.data['package'],
     def do_SUBMIT(self):
         print ''
         print 'Submitting the bug report...'
-        bug = self.bz.createbug(**self.data)
+        #bug = self.bz.createbug(**self.data) doesn't seem to work properly
+        bug = self.bz._createbug(**self.data)
+        print 'You have submitted bug report number #%d' % bug
 
-        print 'You have submitted bug report number %d at %s.' % (bug.id, bug.url)
+        #print 'You have submitted bug report number %d at %s.' % (bug.id, bug.url)
         return 'EXIT'
