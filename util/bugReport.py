@@ -22,6 +22,9 @@ class BugReport(FSM_def.FSM):
         self.data['package'] = pkg
         self.pkg_info = pkg_info
         self.data['summary'] = summary
+        self.data['project'] = pkg_info[2]
+        self.ver = pkg_info[0]
+        self.data['apiurl'] = pkg_info[1]
 
 
     def _resp(self, suffix=''):
@@ -32,6 +35,9 @@ class BugReport(FSM_def.FSM):
 
     def getHeader(self):
         return """Package: %s
+Project: %s
+Version: %s
+Apiurl: %s
 Summary: %s
 Product: %s
 Platform: %s
@@ -39,6 +45,9 @@ Component: %s
 Severity: %s
 Assigned to: %s
 CC: %s""" % (self.data['package'],
+        self.data['project'],
+        self.ver,
+        self.data['apiurl'],
         self.data['summary'],
         self.data['product'],
         self.data['rep_platform'],
