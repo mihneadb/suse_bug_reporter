@@ -22,9 +22,9 @@ def print_list(a_list, attr_list=None, columns=1, msg=None):
         if attr_list != None:
             for attr in attr_list:
                 if attr == 'id':
-                    s += '(#' + str(getattr(a_list[i], attr)) + ') '
+                    s += '(#' + repr(getattr(a_list[i], attr)) + ') '
                     continue
-                s += str(getattr(a_list[i], attr)) + ' '
+                s += repr(getattr(a_list[i], attr)) + ' '
 
         print '%3d. %-40s' % (i + 1, a_list[i] if attr_list == None else s),
         if columns == 1 or i % 2 == 1:
