@@ -152,7 +152,7 @@ def do_submit(args):
 
 def do_query(args):
 
-    bz = initBugzillaAndPkgInfo()
+    bz = initBugzilla()
 
     name = args.package
     if name.strip() == '':
