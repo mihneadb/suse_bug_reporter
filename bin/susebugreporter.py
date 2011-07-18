@@ -95,7 +95,7 @@ def do_submit(args=None):
     name = pkg_info[3]
 
     print ''
-    print "You have selected " +  name + "."
+    print "Package selected: " +  name + "."
     print "Please enter the bug summary (should be concise!)"
     summary = raw_input('--> ')
 
@@ -173,7 +173,7 @@ def do_query(args=None):
     name = pkg_info[3]
 
     print ''
-    print "You have selected " +  name + "."
+    print "Package selected: " +  name + "."
     print "Please enter the bug summary (should be concise!)"
     print "You can leave blank to get _all_ the bugs matching that package"
     summary = raw_input()
