@@ -7,6 +7,8 @@ import urllib2
 import osc.conf
 import osc.core
 
+from subprocess import Popen, PIPE
+
 from suse_bug_reporter.util.console import yes_no, print_list, get_index
 
 try:
@@ -54,7 +56,20 @@ def getInfo(package):
     srcrep_re = re.compile(r"^srcrep:(?P<md5>[a-f0-9]*)-(?P<source>.*)$")
 
 
-    for symbol in ('name', 'provides'):
+    for symbol in ('name', 'provides', 'basenames'):
+
+        if symbol == 'basenames':
+            if len(ret.keys()) > 0:
+                # a package was already found, no need to look for owner of executable
+                break
+
+            output = Popen(('which', package), stdout=PIPE, stderr=PIPE).communicate()
+            if output[0] == '':
+                print 'Nothing named %s found in your $PATH. Maybe add '\
+                    '/sbin and /usr/sbin to it?' % package
+                break
+                
+            package = output[0].strip()
 
         #to match all packages, with globbing!
         if not glob:
