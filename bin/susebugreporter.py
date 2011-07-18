@@ -24,22 +24,22 @@ from suse_bug_reporter.util.console import print_list, yes_no, get_index, choice
 from suse_bug_reporter.util import packageInfo, gather, login
 from suse_bug_reporter.util.sortByKeywords import sortByKeywords
 from suse_bug_reporter.util.bugReport import BugReport
+from suse_bug_reporter.aid_user import find_app
 
 
 
 
-def do_aid(args):
+def do_aid(args=None):
 
-    aid = args.choice
+    msg = 'What module do you want to use?'
+    idx = choice(msg, 'find-app')
+    funcs = {
+        0 : find_app.find_app
+    }
+    funcs.get(idx)()
 
-    # safety precaution for exec
-    ns = dict()
-
-    exec 'from %s.%s import %s' % (pkg, a_pkg, aid) in ns
-    exec 'output = %s.%s()' % (aid, aid) in ns
-    print ns['output']
-
-def do_gather(args):
+    
+def do_gather(args=None):
 
     print 'Gathering relevant system information...'
 
@@ -61,7 +61,7 @@ def initBugzilla():
 
     return bz
 
-def do_submit(args):
+def do_submit(args=None):
 
     # init osc
     try:
@@ -150,14 +150,19 @@ def do_submit(args):
     return 0
 
 
-def do_query(args):
+def do_query(args=None):
 
-    bz = initBugzilla()
+    if args:
+        name = args.package
+    else:
+        name = raw_input('Package to query --> ')
 
-    name = args.package
     if name.strip() == '':
         print 'Package name cannot be blank!'
         sys.exit(1)
+
+    bz = initBugzilla()
+    
     pkg_info = packageInfo.getInfo(name)
 
     if pkg_info == None:
@@ -210,13 +215,28 @@ def do_query(args):
 
 def main():
 
+    if len(sys.argv) == 1:
+        # run in interactive mode
+        print 'Starting interactive mode..'
+
+        msg = 'What module do you want to use?'
+        idx = choice(msg, 'aid', 'gather', 'query', 'submit')
+        funcs = {
+            0 : do_aid,
+            1 : do_gather,
+            2 : do_query,
+            3 : do_submit
+        }
+        funcs.get(idx)()
+
+        sys.exit(0)
+
     # creating the parser for the arguments
     parser = argparse.ArgumentParser(description='Bugzilla interactions')
     commands = parser.add_subparsers()
 
     aid = commands.add_parser('aid', help='aid users to find the relevant app')
     aid.set_defaults(func=do_aid)
-    aid.add_argument('choice', type=str, choices=['find_app'])
 
     gather = commands.add_parser('gather', help='gather relevant system info')
     gather.set_defaults(func=do_gather)
@@ -234,4 +254,13 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except EOFError:
+        print ''
+        print 'Caught EOFError, exiting.'
+        sys.exit(1)
+    except KeyboardInterrupt:
+        print ''
+        print 'Caught KeyboardInterrupt, exiting.'
+        sys.exit(1)
