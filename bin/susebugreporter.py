@@ -24,7 +24,7 @@ from suse_bug_reporter.util.console import print_list, yes_no, get_index, choice
 from suse_bug_reporter.util import packageInfo, gather, login
 from suse_bug_reporter.util.sortByKeywords import sortByKeywords
 from suse_bug_reporter.util.bugReport import BugReport
-from suse_bug_reporter.aid_user import find_app
+from suse_bug_reporter.aid_user import find_app, find_package
 
 
 
@@ -32,10 +32,17 @@ from suse_bug_reporter.aid_user import find_app
 def do_aid(args=None):
 
     msg = 'What module do you want to use?'
-    idx = choice(msg, 'find-app')
+    AID_LIST = (
+            "Find app - click on a window to find the application's name.",
+            "Find package - enter an executable's name to find its package."
+           )
     funcs = {
-        0 : find_app.find_app
+        0 : find_app.find_app,
+        1 : find_package.find_package
     }
+
+    print_list(AID_LIST, msg='Available modules:')
+    idx = get_index(len(AID_LIST), msg='Which one?')
     funcs.get(idx)()
 
     
