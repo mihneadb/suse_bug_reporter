@@ -21,10 +21,7 @@ class BugReport(FSM_def.FSM):
         self.data = data
         self.pkg = pkg
         self.pkg_info = pkg_info
-        if pkg not in summary:
-            self.data['summary'] = '[' + pkg + '] ' + summary
-        else:
-            self.data['summary'] = summary
+        self.data['summary'] = summary
         self.prj = pkg_info[2]
         self.ver = pkg_info[0]
         self.apiurl = pkg_info[1]
@@ -257,17 +254,26 @@ CC: %s""" % (self.pkg,
         if self.data['summary'].strip() == '':
             return 'GET_SUMMARY'
 
-        return 'GET_SEVERITY'
+        return 'CHECK_PKG_IN_SUMMARY'
 
 
     def do_GET_SUMMARY(self):
         print ''
-        print "Summary can't be empty! Please enter a concise description"\
+        print "Summary can't be empty! Please enter a concise description "\
                     "of the bug you are reporting"
         ans = raw_input('--> ')
         self.data['summary'] = ans
 
         return 'TEST_SUMMARY'
+
+
+    def do_CHECK_PKG_IN_SUMMARY(self):
+        if self.pkg not in self.data['summary']:
+            self.data['summary'] = '[' + self.pkg + '] ' + self.data['summary']
+            print 'Package name was not found in summary. It was added automatically.'
+            print 'Summary is: ' + self.data['summary']
+
+        return 'GET_SEVERITY'
 
 
     def do_GET_SEVERITY(self):
