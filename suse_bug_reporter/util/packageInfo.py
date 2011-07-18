@@ -65,7 +65,7 @@ def getInfo(package):
 
             output = Popen(('which', package), stdout=PIPE, stderr=PIPE).communicate()
             if output[0] == '':
-                print 'Nothing named %s found in your $PATH. Maybe add '\
+                print 'Nothing named %s was found in your $PATH. Maybe add '\
                     '/sbin and /usr/sbin to it?' % package
                 break
                 
