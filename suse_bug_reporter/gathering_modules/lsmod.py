@@ -9,7 +9,7 @@ def gather_from_lsmod():
 
     modules_list = list()
 
-    output = Popen('lsmod', stdout=PIPE).communicate()[0]
+    output = Popen('/sbin/lsmod', stdout=PIPE).communicate()[0]
     output = output.splitlines()
     del output[0]
 

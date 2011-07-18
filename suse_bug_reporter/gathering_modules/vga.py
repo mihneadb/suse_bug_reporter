@@ -7,7 +7,7 @@ def gather_from_vga():
     ''' Returns a string that represents the graphic adapter's name, as
         told by the lspci output '''
 
-    lspci = Popen('lspci', stdout=PIPE)
+    lspci = Popen('/sbin/lspci', stdout=PIPE)
     grep = Popen(('grep', 'VGA'), stdin=lspci.stdout, stdout=PIPE)
     lspci.stdout.close()
     output = grep.communicate()[0]
