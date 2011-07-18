@@ -19,8 +19,11 @@ def gather_data(gather_list):
     data = dict()
 
     for prop in gather_list:
-        module = __import__('%s.%s.%s' % (pkg, g_pkg, prop), fromlist=[prop])
-        data[prop] = getattr(module, 'gather_from_%s' % prop)()
+        try:
+            module = __import__('%s.%s.%s' % (pkg, g_pkg, prop), fromlist=[prop])
+            data[prop] = getattr(module, 'gather_from_%s' % prop)()
+        except OSError:
+            continue
 
     return data
 
