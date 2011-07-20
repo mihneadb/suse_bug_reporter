@@ -27,7 +27,10 @@ def find_package(pr=True):
         pkg = header['name']
     
     if pr:
-        msg = 'The package that gives %s is %s.' % (name, pkg)
-        print msg
+        if pkg != '' and pkg != None:
+            msg = 'The package that gives %s is %s.' % (name, pkg)
+            print msg
+        else:
+            print 'No package found.'
     else:
         return pkg
