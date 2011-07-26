@@ -4,13 +4,15 @@ import os.path
 import rpm
 
 
-def which(program):
+def which(executable):
     ''' returns absolute path to program's executable, or None if it's not found '''
+
+    assert '/' not in executable
 
     PATH = ('/bin', '/sbin', '/usr/bin', '/usr/sbin')
 
     for d in PATH:
-        abs_path = os.path.join(d, program)
+        abs_path = os.path.join(d, executable)
         if os.path.exists(abs_path):
             return abs_path
     return None
@@ -31,13 +33,16 @@ def get_package(abs_path):
     return pkg
 
 
-def find_package():
+def find_package(resp=None):
 
     print "Which binary's package do you want to find?"
     print 'You can enter either its name or its absolute path.'
-    name = raw_input('--> ')
-    name = name.strip()
 
+    if resp != None:
+        name = resp
+    else:
+        name = raw_input('--> ')
+        name = name.strip()
     
     # check if this is absolute path
     if not os.path.isabs(name):
