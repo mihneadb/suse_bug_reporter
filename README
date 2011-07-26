@@ -8,3 +8,9 @@ You also need osc:
 
 Then, use the tool from the parent folder of where you have the repos cloned:
 $ PYTHONPATH=python-bugzilla/:suse_bug_reporter/ suse_bug_reporter/bin/susebugreporter.py 
+
+
+For testing:
+Install python-nose (zypper in python-nose) and then just do:
+$ nosetests
+
