@@ -35,7 +35,7 @@ Thumbs.db
 
 *.pyc
 bugzilla
-test*
+#test*
 susereport*
 .sbr
 
