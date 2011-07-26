@@ -4,7 +4,7 @@ import sys
 from subprocess import Popen, PIPE, STDOUT
 
 
-def find_app(pr=True):
+def find_app():
     ''' returns a string that represents the name of the application
         clicked by the user '''
 
@@ -20,11 +20,7 @@ def find_app(pr=True):
     output = output.replace('"', '')
 
     msg = "The app's name is " + output + "."
-    if pr:
-        print msg
-    else:
-        return msg
-
+    return msg
 
 if __name__ == '__main__':
     print find_app()

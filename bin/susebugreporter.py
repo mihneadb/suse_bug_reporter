@@ -43,7 +43,12 @@ def do_aid(args=None):
 
     print_list(AID_LIST, msg='Available modules:')
     idx = get_index(len(AID_LIST), msg='Which one?')
-    funcs.get(idx)()
+
+    ans = funcs.get(idx)()
+    if ans == None:
+        print 'Nothing found.'
+    else:
+        print ans
 
     
 def do_gather(args=None):
