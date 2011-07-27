@@ -41,3 +41,7 @@ susereport*
 
 *.swp
 *~
+
+
+.project
+.pydevproject
