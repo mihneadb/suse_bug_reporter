@@ -231,8 +231,14 @@ def main():
         # run in interactive mode
         print 'Starting interactive mode..'
 
-        msg = 'What module do you want to use?'
-        idx = choice(msg, 'aid', 'gather', 'query', 'submit')
+        msg = 'Welcome to the bug reporter! What do you want to do?'
+        CHOICES = (
+                "find app's name",
+                "gather system data",
+                "query a report",
+                "submit a bug report"
+                )
+        idx = choice(msg, *CHOICES)
         funcs = {
             0 : do_aid,
             1 : do_gather,
