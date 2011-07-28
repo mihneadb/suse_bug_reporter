@@ -80,8 +80,15 @@ def do_submit(args=None):
     print "Which is the package you want to file a report against?"
     print "If you are not sure, you can just type the beginning of the name and"\
             " use a '*' to invoke globbing."
+    print "Also, you can type '?' to start the aid_user module that helps "\
+            "finding the correct package name."
+    
+    print ''
 
-    name = raw_input('Package name: ')
+    name = raw_input("Package name (or '?'): ")
+    while '?' in name:
+        do_aid()
+        name = raw_input("Package name (or '?'): ")
     if name.strip() == '':
         print 'Package name cannot be blank!'
         sys.exit(1)
