@@ -21,10 +21,11 @@ rel_threshold = 0.75
 # custom imports
 import bugzilla
 from suse_bug_reporter.util.console import print_list, yes_no, get_index, choice
-from suse_bug_reporter.util import packageInfo, gather, login
+from suse_bug_reporter.util import packageInfo, gather
 from suse_bug_reporter.util.sortByKeywords import sortByKeywords
 from suse_bug_reporter.util.bugReport import BugReport
 from suse_bug_reporter.aid_user import find_app, find_package
+from suse_bug_reporter.util.initBz import initBugzilla
 
 
 
@@ -59,19 +60,6 @@ def do_gather(args=None):
 
     pprint.pprint(data)
 
-def initBugzilla():
-
-    # check login
-    (username, password) = login.getCreds()
-
-    print "Connecting to Novell's Bugzilla..."
-
-    # instantiate the bugzilla object
-    bugzillaURL = 'https://bugzilla.novell.com/xmlrpc.cgi'
-    cls = bugzilla.getBugzillaClassForURL(bugzillaURL)
-    bz = cls(url=bugzillaURL, user=username, password=password)
-
-    return bz
 
 def do_submit(args=None):
 
@@ -108,7 +96,7 @@ def do_submit(args=None):
 
     print ''
     print "Package selected: " +  name + "."
-    print "Please enter the bug summary (should be concise!)"
+    print "Please enter the bug summary (should be short!)"
     summary = raw_input('--> ')
 
     # check similar bug reports through query by package and then match keywords
@@ -186,7 +174,7 @@ def do_query(args=None):
 
     print ''
     print "Package selected: " +  name + "."
-    print "Please enter the bug summary (should be concise!)"
+    print "Please enter the bug summary (should be short!)"
     print "You can leave blank to get _all_ the bugs matching that package"
     summary = raw_input()
 
