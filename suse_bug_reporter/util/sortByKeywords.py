@@ -17,6 +17,9 @@ def sortByKeywords(bug_list, keyword_list, rel_threshold):
     max_relevance * rel_threshold, so the latter must be a float between
     0 and 1 '''
 
+    if keyword_list == [] or keyword_list == ():
+        return bug_list
+
     # ignored words; len() has to be >= 3
     IGNORED = ('for',)
 
