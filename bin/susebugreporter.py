@@ -20,7 +20,7 @@ rel_threshold = 0.75
 
 # custom imports
 import bugzilla
-from suse_bug_reporter.util.console import print_list, yes_no, get_index, choice
+from suse_bug_reporter.util.console import print_list, yes_no, get_index, choice, pager
 from suse_bug_reporter.util import packageInfo, gather
 from suse_bug_reporter.util.sortByKeywords import sortByKeywords
 from suse_bug_reporter.util.bugReport import BugReport
@@ -61,7 +61,10 @@ def do_gather(args=None):
     pprint.pprint(data)
 
 
-def do_submit(args=None):
+def do_submit(args=None, pkg=None):
+
+    print "Welcome to the submit bug report module!"
+    print ''
 
     # init osc
     try:
@@ -85,7 +88,10 @@ def do_submit(args=None):
     
     print ''
 
-    name = raw_input("Package name (or '?'): ")
+    if pkg != None:
+        name = pkg
+    else:
+        name = raw_input("Package name (or '?'): ")
     while '?' in name:
         do_aid()
         name = raw_input("Package name (or '?'): ")
@@ -108,9 +114,11 @@ def do_submit(args=None):
 
     # check similar bug reports through query by package and then match keywords
     bug_list = bz.query({'summary': name})
+    print len(bug_list)
 
     if len(bug_list) > 0:
         kw_list = re.findall(r'\w+', summary.lower())
+        print kw_list
         if name in kw_list:
             del kw_list[kw_list.index(name)]
         bug_list = sortByKeywords(bug_list, kw_list, rel_threshold)
@@ -120,19 +128,10 @@ def do_submit(args=None):
     if len(bug_list) > 0:
         # if there are still relevant bugs in the list
         # ask the user to modify a similar bug report or create a new one
-        print_list(bug_list, attr_list=('summary', 'id'),
-                msg='These are the similar bug reports found')
+        idx = pager(bug_list, attr_list=('id', 'summary'),
+                msg='Please check if your bug duplicates one of these: (if so, select it)')
 
-        print ''
-
-        msg = 'Do you want to contribute to one of the bug reports above or'\
-                ' submit a new one?  yes (contribute)/no (new one)'
-        idx = choice(msg, 'contribute', 'new')
-
-        print ''
-        if idx == 0:
-            idx = get_index(len(bug_list),
-                    msg='Which report do you want to contribute to?')
+        if idx != None:
             bug = bug_list[idx]
             print ''
             print 'You have selected bug #' + str(bug.id) + ' with the summary '\
@@ -201,12 +200,19 @@ def do_query(args=None):
     if len(bug_list) > 0:
         # if there are still relevant bugs in the list
 
-        print_list(bug_list, attr_list=('summary', 'id'),
-                msg='These are the similar bug reports found:')
+        idx = pager(bug_list, attr_list=('id', 'summary'),
+                msg='Which bug report are you interested in?')
         print ''
 
-        idx = get_index(len(bug_list),
-                msg='Which report are you interested in?')
+        if idx == None:
+            msg =  "Since you are not interested in any of the existing bug reports,"\
+                    " do you want to submit one? Yes/No"
+            yes = yes_no(msg)
+            if yes:
+                do_submit(pkg=name)
+            print "Bye bye then!"
+            sys.exit(0)
+
         bug = bug_list[idx]
         print ''
         print 'You have selected bug #' + str(bug.id) + ' with the summary '\
