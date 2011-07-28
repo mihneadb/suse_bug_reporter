@@ -12,5 +12,5 @@ $ PYTHONPATH=python-bugzilla/:suse_bug_reporter/ suse_bug_reporter/bin/susebugre
 
 For testing:
 Install python-nose (zypper in python-nose) and then just do:
-$ nosetests
+$ PYTHONPATH=python-bugzilla/:suse_bug_reporter/ nosetests -w suse_bug_reporter/tests/
 
