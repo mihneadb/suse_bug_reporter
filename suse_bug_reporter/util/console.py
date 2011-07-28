@@ -33,6 +33,60 @@ def print_list(a_list, attr_list=None, columns=1, msg=None):
     print ''
 
 
+def fitString(s, cols):
+    ''' returns a fraction + [...] of a string if it doesnt fit cols, or
+    the whole string if it fits '''
+
+    length = len(s)
+    if length > cols:
+        return s[:cols-7] + ' [...]'
+    return s
+
+def pager(a_list, attr_list=None, columns=1, msg=None):
+    
+    length = len(a_list)
+    printed_lines = 0
+
+    while printed_lines < length:
+        sizes = os.popen('stty size', 'r').read().split()
+        rows = int(sizes[0])
+        cols = int(sizes[1])
+        nr = rows - 2
+        if msg != None:
+            nr -= 2
+            print msg
+            print ''
+        lines_left = length - printed_lines
+        for i in range(nr if nr < lines_left else lines_left):
+            s = ''
+            if attr_list != None:
+                for attr in attr_list:
+                    if attr == 'id':
+                        s += '(#' + repr(getattr(a_list[printed_lines + i], attr)) + ') '
+                        continue
+                    s += repr(getattr(a_list[printed_lines + i], attr)) + ' '
+            line = '%3d. %-40s' % (printed_lines + i + 1,
+                    a_list[printed_lines + i] if attr_list == None else s)
+            print fitString(line, cols),
+            if columns == 1 or i % 2 == 1:
+                print ''
+        printed_lines += nr
+        print "[n]ext page    [s]elect index    [r]eturn (select nothing)"
+        while True:
+            ans = raw_input('Answer--> ')
+            if ans in ('r', 'R'):
+                return None
+            if ans in ('n', 'N'):
+                if printed_lines >= length:
+                    print 'No more entries to display. Please select [r]eturn or [i]ndex.'
+                    continue
+                break
+            elif ans in ('i', 'I'):
+                return get_index(length)
+
+    
+
+
 def choice(msg, *options):
     ''' prompts the user with a multiple choice question;
         if the options passed are for example 'contribute' and 'new',
