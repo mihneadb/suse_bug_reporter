@@ -38,7 +38,7 @@ def fitString(s, cols):
     the whole string if it fits '''
 
     length = len(s)
-    if length > cols:
+    if length >= cols:
         return s[:cols-7] + ' [...]'
     return s
 
