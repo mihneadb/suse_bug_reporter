@@ -10,6 +10,7 @@ import osc.core
 from subprocess import Popen, PIPE
 
 from suse_bug_reporter.util.console import yes_no, print_list, get_index
+from suse_bug_reporter.aid_user.find_package import which
 
 try:
     from xml.etree import cElementTree as ET
@@ -63,13 +64,12 @@ def getInfo(package):
                 # a package was already found, no need to look for owner of executable
                 break
 
-            output = Popen(('which', package), stdout=PIPE, stderr=PIPE).communicate()
-            if output[0] == '':
-                print 'Nothing named %s was found in your $PATH. Maybe add '\
-                    '/sbin and /usr/sbin to it?' % package
-                break
+            if '/' not in package:
+                abs = which(package)
+                if abs is None:
+                    break
                 
-            package = output[0].strip()
+                package = abs
 
         #to match all packages, with globbing!
         if not glob:
