@@ -158,7 +158,7 @@ def do_submit(args=None, pkg=None):
 
 def do_query(args=None):
 
-    if args:
+    if args and args.package:
         name = args.package
     else:
         name = raw_input('Package to query --> ')
@@ -180,9 +180,14 @@ def do_query(args=None):
 
     print ''
     print "Package selected: " +  name + "."
-    print "Please enter the bug summary (should be short!)"
-    print "You can leave blank to get _all_ the bugs matching that package"
-    summary = raw_input()
+    
+    if args and args.summary:
+        summary = args.summary
+        print "Summary provided: " + summary
+    else:
+        print "Please enter the bug summary (should be short!)"
+        print "You can leave blank to get _all_ the bugs matching that package"
+        summary = raw_input()
 
     # check similar bug reports through query by package and then match keywords
     print ''
@@ -269,7 +274,8 @@ Can be run with no arguments, which starts it in submit bug report mode.'''
 
     query = commands.add_parser('query', help='get a list of reports')
     query.set_defaults(func=do_query)
-    query.add_argument('package', type=str)
+    query.add_argument('package', type=str, help='the name of the package to query')
+    query.add_argument('-s', '--summary', help='summary of the bug, for filtering results', dest='summary')
     
     menu = commands.add_parser('menu', help='get a menu to choose a mode')
     menu.set_defaults(func=do_menu)
