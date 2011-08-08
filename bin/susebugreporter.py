@@ -225,11 +225,7 @@ def do_query(args=None):
     sys.exit(0)
 
 
-
-def main():
-
-    if len(sys.argv) == 1:
-        # run in interactive mode
+def do_menu(args=None):
         print 'Starting interactive mode..'
 
         msg = 'Welcome to the bug reporter! What do you want to do?'
@@ -248,10 +244,18 @@ def main():
         }
         funcs.get(idx)()
 
+
+def main():
+
+    if len(sys.argv) == 1:
+        # run in submit mode
+        do_submit()
         sys.exit(0)
 
     # creating the parser for the arguments
-    parser = argparse.ArgumentParser(description='Bugzilla interactions')
+    desc = '''Bug reporting tool for openSUSE.
+Can be run with no arguments, which starts it in submit bug report mode.'''
+    parser = argparse.ArgumentParser(description=desc)
     commands = parser.add_subparsers()
 
     aid = commands.add_parser('aid', help='aid users to find the relevant app')
@@ -266,6 +270,9 @@ def main():
     query = commands.add_parser('query', help='get a list of reports')
     query.set_defaults(func=do_query)
     query.add_argument('package', type=str)
+    
+    menu = commands.add_parser('menu', help='get a menu to choose a mode')
+    menu.set_defaults(func=do_menu)
 
 
     args = parser.parse_args()
