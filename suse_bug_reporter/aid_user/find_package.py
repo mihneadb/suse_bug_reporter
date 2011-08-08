@@ -34,6 +34,8 @@ def get_package(abs_path):
 
 
 def find_package(resp=None):
+    '''Returns a tuple of two items - the first is the printable output for the user;
+    The second is the actual path to the package'''
 
     print "Which binary's package do you want to find?"
     print 'You can enter either its name or its absolute path.'
@@ -55,4 +57,4 @@ def find_package(resp=None):
     if pkg == None:
         return None
 
-    return 'The package for %s is %s.' % (name, pkg)
+    return ('The package for %s is %s.' % (name, pkg), pkg)

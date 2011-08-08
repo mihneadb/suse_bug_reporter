@@ -5,8 +5,8 @@ from subprocess import Popen, PIPE, STDOUT
 
 
 def find_app(resp=None):
-    ''' returns a string that represents the name of the application
-        clicked by the user '''
+    '''Returns a tupla of two items: the first is the string that's printable
+    to the user; The second is the actual app name'''
 
     print "Please click on the window of which you want to find the app name."
 
@@ -24,7 +24,7 @@ def find_app(resp=None):
     output = output.replace('"', '')
 
     msg = "The app's name is " + output + "."
-    return msg
+    return (msg, output)
 
 if __name__ == '__main__':
     print find_app()
