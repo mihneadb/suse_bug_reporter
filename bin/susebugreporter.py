@@ -203,7 +203,7 @@ def do_query(args=None):
     print ''
     print "Package selected: " +  name + "."
     
-    if args and args.summary:
+    if args and args.summary is not None:
         summary = args.summary
         print "Summary provided: " + summary
     else:
