@@ -53,7 +53,7 @@ def pager(a_list, attr_list=None, columns=1, msg=None):
         cols = int(sizes[1])
         nr = rows - 2
         if msg != None:
-            nr -= 2
+            nr -= len(msg) / cols + 2
             print msg
             print ''
         lines_left = length - printed_lines
