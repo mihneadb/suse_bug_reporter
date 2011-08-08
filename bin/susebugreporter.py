@@ -20,7 +20,7 @@ rel_threshold = 0.75
 
 # custom imports
 import bugzilla
-from suse_bug_reporter.util.console import print_list, yes_no, get_index, choice, pager
+from suse_bug_reporter.util.console import print_list, yes_no, get_index, choice, pager, custom_input
 from suse_bug_reporter.util import packageInfo, gather
 from suse_bug_reporter.util.sortByKeywords import sortByKeywords
 from suse_bug_reporter.util.bugReport import BugReport
@@ -28,6 +28,20 @@ from suse_bug_reporter.aid_user import find_app, find_package
 from suse_bug_reporter.util.initBz import initBugzilla
 
 
+def do_find_app(args=None):
+    ans = find_app.find_app()
+    if ans is None:
+        print 'Nothing found.'
+        return
+    print ans[0]
+    
+    
+def do_find_pkg(args=None):
+    ans = find_package.find_package()
+    if ans is None:
+        print 'Nothing found.'
+        return
+    print ans[0]
 
 
 def do_aid(args=None):
@@ -46,10 +60,12 @@ def do_aid(args=None):
     idx = get_index(len(AID_LIST), msg='Which one?')
 
     ans = funcs.get(idx)()
-    if ans == None:
+    if ans is None:
         print 'Nothing found.'
     else:
-        print ans
+        print ans[0]
+
+    return ans[1]
 
     
 def do_gather(args=None):
@@ -93,8 +109,8 @@ def do_submit(args=None, pkg=None):
     else:
         name = raw_input("Package name (or '?'): ")
     while '?' in name:
-        do_aid()
-        name = raw_input("Package name (or '?'): ")
+        ans = do_aid()
+        name = custom_input("Package name (or '?'): ", ans)
     if name.strip() == '':
         print 'Package name cannot be blank!'
         sys.exit(1)
@@ -270,7 +286,11 @@ Can be run with no arguments, which starts it in submit bug report mode.'''
     commands = parser.add_subparsers()
 
     aid = commands.add_parser('aid', help='aid users to find the relevant app')
-    aid.set_defaults(func=do_aid)
+    aidp = aid.add_subparsers()
+    f_app = aidp.add_parser('app', help="click on a window and find out the app's name")
+    f_app.set_defaults(func=do_find_app)
+    f_pkg = aidp.add_parser('pkg', help="enter an executable's name and find out it's package")
+    f_pkg.set_defaults(func=do_find_pkg)
 
     gather = commands.add_parser('gather', help='gather relevant system info')
     gather.set_defaults(func=do_gather)
