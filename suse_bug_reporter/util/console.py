@@ -159,7 +159,7 @@ def get_index(length, msg=None):
 
 
 def custom_input(msg='', preselect=''):
-    ans = raw_input(msg)
+    ans = raw_input(msg + "[preselected: %s] " % preselect)
     if ans == '':
         return preselect
 
