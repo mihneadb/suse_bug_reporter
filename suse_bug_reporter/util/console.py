@@ -43,6 +43,9 @@ def fitString(s, cols):
     return s
 
 def pager(a_list, attr_list=None, columns=1, msg=None):
+    '''Outputs the provided list similar to more / less. Provides the possibility
+    of selecting a _valid_ index (checks it). Also, if nothing is selected, it returns
+    None'''
     
     length = len(a_list)
     printed_lines = 0
@@ -71,20 +74,24 @@ def pager(a_list, attr_list=None, columns=1, msg=None):
             if columns == 1 or i % 2 == 1:
                 print ''
         printed_lines += nr
-        print "[n]ext page    [s]elect index    [r]eturn (select nothing)"
+        print "[n]ext page    [r]eturn (select nothing)"
         while True:
             ans = raw_input('Answer--> ')
             if ans in ('r', 'R'):
                 return None
             if ans in ('n', 'N'):
                 if printed_lines >= length:
-                    print 'No more entries to display. Please select [r]eturn or [i]ndex.'
+                    print 'No more entries to display. Please select [r]eturn or an index.'
                     continue
                 break
-            elif ans in ('i', 'I'):
-                return get_index(length)
-
-    
+            try:
+                idx = int(ans)
+                assert idx > 0
+                assert idx <= length
+            except (ValueError, AssertionError):
+                print 'Invalid index, please try again.'
+            else:
+                return idx - 1
 
 
 def choice(msg, *options):
