@@ -98,6 +98,9 @@ def do_submit(args=None, pkg=None):
     if name.strip() == '':
         print 'Package name cannot be blank!'
         sys.exit(1)
+    if name == '*':
+        print 'Invalid package name!'
+        sys.exit(1)
     pkg_info = packageInfo.getInfo(name)
 
     if pkg_info == None:
@@ -165,6 +168,9 @@ def do_query(args=None):
 
     if name.strip() == '':
         print 'Package name cannot be blank!'
+        sys.exit(1)
+    if name == '*':
+        print 'Invalid package name!'
         sys.exit(1)
 
     bz = initBugzilla()
