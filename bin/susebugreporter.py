@@ -306,7 +306,7 @@ Can be run with no arguments, which starts it in submit bug report mode.'''
     gather = commands.add_parser('gather', help='gather relevant system info')
     gather.set_defaults(func=do_gather)
 
-    submit = commands.add_parser('submit', help='submit a new bug')
+    submit = commands.add_parser('submit', help='submit a new bug [less interactive mode, faster]')
     submit.add_argument('package', type=str, help='the name of the package to submit a report against')
     submit.add_argument('-s', '--summary', help='summary of the bug to be reported', dest='summary')
     submit.set_defaults(func=do_submit)
