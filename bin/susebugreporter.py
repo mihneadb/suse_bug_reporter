@@ -77,7 +77,7 @@ def do_gather(args=None):
     pprint.pprint(data)
 
 
-def do_submit(args=None, pkg=None):
+def do_submit(args=None, pkg=None, sum=None):
 
     print "Welcome to the submit bug report module!"
     print ''
@@ -91,23 +91,31 @@ def do_submit(args=None, pkg=None):
 
     # init bugzilla
     bz = initBugzilla()
-
-    print ''
-    print "If you don't know which package you want to file a bug to, you can"\
-            " use the susebugreport aid command to get some help."
-
-    print "Which is the package you want to file a report against?"
-    print "If you are not sure, you can just type the beginning of the name and"\
-            " use a '*' to invoke globbing."
-    print "Also, you can type '?' to start the aid_user module that helps "\
-            "finding the correct package name."
     
-    print ''
-
-    if pkg != None:
+    # check if it should be run in minimal interaction mode.
+    interact = 1
+    if args:
+        interact = 0
+    
+    name = ''
+    if pkg is not None:
         name = pkg
-    else:
+    if args and args.package:
+        name = args.package
+    if not name:
+        print ''
+        print "If you don't know which package you want to file a bug to, you can"\
+                " use the susebugreport aid command to get some help."
+    
+        print "Which is the package you want to file a report against?"
+        print "If you are not sure, you can just type the beginning of the name and"\
+                " use a '*' to invoke globbing."
+        print "Also, you can type '?' to start the aid_user module that helps "\
+                "finding the correct package name."
+        
+        print ''
         name = raw_input("Package name (or '?'): ")
+
     while '?' in name:
         ans = do_aid()
         name = custom_input("Package name (or '?'): ", ans)
@@ -127,17 +135,22 @@ def do_submit(args=None, pkg=None):
     name = pkg_info[3]
 
     print ''
-    print "Package selected: " +  name + "."
-    print "Please enter the bug summary (should be short!)"
-    summary = raw_input('--> ')
+    print "Package selected: " + name
+    
+    summary = ''
+    if sum is not None:
+        summary = sum
+    if args and args.summary:
+        summary = args.summary
+    if not summary: 
+        print "Please enter the bug summary (should be short!)"
+        summary = raw_input('--> ')
+    print "Summary entered: " + summary
 
     # check similar bug reports through query by package and then match keywords
     bug_list = bz.query({'summary': name})
-    print len(bug_list)
-
     if len(bug_list) > 0:
         kw_list = re.findall(r'\w+', summary.lower())
-        print kw_list
         if name in kw_list:
             del kw_list[kw_list.index(name)]
         bug_list = sortByKeywords(bug_list, kw_list, rel_threshold)
@@ -165,7 +178,7 @@ def do_submit(args=None, pkg=None):
     # gather the rest of the required data and submit the bug
     print ''
     try:
-        automat = BugReport(bz=bz, pkg=name, pkg_info=pkg_info, summary=summary)
+        automat = BugReport(bz=bz, pkg=name, pkg_info=pkg_info, summary=summary, interact=interact)
         automat.main()
     except EOFError, eofe:
         return 0
@@ -201,7 +214,7 @@ def do_query(args=None):
     name = pkg_info[3]
 
     print ''
-    print "Package selected: " +  name + "."
+    print "Package selected: " +  name
     
     if args and args.summary is not None:
         summary = args.summary
@@ -236,7 +249,7 @@ def do_query(args=None):
                     " do you want to submit one? Yes/No"
             yes = yes_no(msg)
             if yes:
-                do_submit(pkg=name)
+                do_submit(pkg=name, summary=summary)
             print "Bye bye then!"
             sys.exit(0)
 
@@ -247,7 +260,11 @@ def do_query(args=None):
         print 'You can contribute to it at this URL: ' + bug.url
 
     else:
-        print "No bug report found. Why not create one?"
+        msg = "No bug report found. Why not create one? Yes/No"
+        yes = yes_no(msg)
+        if yes:
+            do_submit(pkg=name, sum=summary)
+        print 'Bye bye then!'
 
     sys.exit(0)
 
@@ -272,13 +289,7 @@ def do_menu(args=None):
         funcs.get(idx)()
 
 
-def main():
-
-    if len(sys.argv) == 1:
-        # run in submit mode
-        do_submit()
-        sys.exit(0)
-
+def init_parser():
     # creating the parser for the arguments
     desc = '''Bug reporting tool for openSUSE.
 Can be run with no arguments, which starts it in submit bug report mode.'''
@@ -296,6 +307,8 @@ Can be run with no arguments, which starts it in submit bug report mode.'''
     gather.set_defaults(func=do_gather)
 
     submit = commands.add_parser('submit', help='submit a new bug')
+    submit.add_argument('package', type=str, help='the name of the package to submit a report against')
+    submit.add_argument('-s', '--summary', help='summary of the bug to be reported', dest='summary')
     submit.set_defaults(func=do_submit)
 
     query = commands.add_parser('query', help='get a list of reports')
@@ -305,8 +318,18 @@ Can be run with no arguments, which starts it in submit bug report mode.'''
     
     menu = commands.add_parser('menu', help='get a menu to choose a mode')
     menu.set_defaults(func=do_menu)
+    
+    return parser
 
 
+def main():
+
+    if len(sys.argv) == 1:
+        # run in submit mode
+        do_submit()
+        sys.exit(0)
+
+    parser = init_parser()
     args = parser.parse_args()
     args.func(args)
 
