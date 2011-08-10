@@ -13,7 +13,7 @@ class BugReport(FSM_def.FSM):
 
     END_STATES = ('ERROR', 'EXIT', 'NYI')
 
-    def __init__(self, bz, pkg, pkg_info, summary, data={}):
+    def __init__(self, bz, pkg, pkg_info, summary, data={}, interact=1):
 
         super(BugReport, self).__init__()
 
@@ -25,6 +25,7 @@ class BugReport(FSM_def.FSM):
         self.prj = pkg_info[2]
         self.ver = pkg_info[0]
         self.apiurl = pkg_info[1]
+        self.interact = interact
 
 
     def _resp(self, suffix=''):
@@ -84,9 +85,26 @@ CC: %s""" % (self.pkg,
     def do_START(self):
         print ''
         print 'Starting the collecting data for the report process..'
+        
+        if not self.interact:
+            return "SILENT_GATHER"
 
         return "PRE_ASK_PRODUCT_PLATFORM"
 
+
+    def do_SILENT_GATHER(self):
+        product, platform, full_name = gather_from_release()
+        self.data['product'] = product
+        self.data['rep_platform'] = platform
+        if self.data['rep_platform'] == '':
+            self.data['rep_platform'] = 'All'
+            
+        assignee, cc = packageInfo.getAssignedPersons(self.pkg_info)
+        self.data['assigned_to'] = assignee
+        self.data['cc'] = cc
+        
+        return "GET_COMPONENT"
+    
 
     def do_PRE_ASK_PRODUCT_PLATFORM(self):
         print ''
@@ -172,6 +190,8 @@ CC: %s""" % (self.pkg,
         self.data['component'] = comp_list[idx]
 
         if self.data['component'] == 'Security':
+            if not self.interact:
+                self.data['cc'].append('security-team@suse.de')
             return 'GET_SECURITY_PREFIX'
 
         return 'GET_VERSION'
@@ -198,6 +218,10 @@ CC: %s""" % (self.pkg,
         idx = console.get_index(len(VERSIONS), msg='Which one?')
 
         self.data['version'] = VERSIONS[idx]
+        
+        if not self.interact:
+            return "TEST_SUMMARY"
+        
         return 'LOAD_ASSIGNEE'
 
 
@@ -290,7 +314,6 @@ CC: %s""" % (self.pkg,
         print 'Please describe the impact of the bug, choose a severity for the issue.'
         console.print_list(DESCRIPTIONS, msg='Available severities:')
 
-        print ''
         idx = console.get_index(len(SEVERITIES), 'Which one?')
 
         sev = SEVERITIES[idx]
