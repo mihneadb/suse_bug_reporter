@@ -379,8 +379,13 @@ CC: %s""" % (self.pkg,
         print ''
         print 'Submitting the bug report...'
         #bug = self.bz.createbug(**self.data) doesn't seem to work properly
-        bug = self.bz._createbug(**self.data)
-        print 'You have submitted bug report number #%d' % bug
+        try:
+            bug = self.bz._createbug(**self.data)
+        except:
+            print 'The data you have entered is invalid to create a bug report.'
+            print 'Please use the interactive mode of this tool. (run it with no arguments)'
+        else:
+            print 'You have submitted bug report number #%d' % bug
 
         #print 'You have submitted bug report number %d at %s.' % (bug.id, bug.url)
         return 'EXIT'
