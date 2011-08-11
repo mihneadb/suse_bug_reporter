@@ -167,7 +167,7 @@ def get_index(length, msg=None):
 
 def custom_input(msg='', preselect=''):
     ans = raw_input(msg + "[preselected: %s] " % preselect)
-    if ans == '':
+    if ans.strip() is '':
         return preselect
 
     return ans
