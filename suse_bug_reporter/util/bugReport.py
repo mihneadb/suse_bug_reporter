@@ -3,6 +3,7 @@
 
 import os
 import pprint
+import re
 
 from suse_bug_reporter.gathering_modules.release import gather_from_release
 from suse_bug_reporter.util import console, packageInfo, gather
@@ -85,30 +86,21 @@ CC: %s""" % (self.pkg,
     def do_START(self):
         print ''
         print 'Starting the collecting data for the report process..'
-        
-        if not self.interact:
-            return "SILENT_GATHER"
 
         return "PRE_ASK_PRODUCT_PLATFORM"
-
-
-    def do_SILENT_GATHER(self):
-        product, platform, full_name = gather_from_release()
-        self.data['product'] = product
-        self.data['rep_platform'] = platform
-        if self.data['rep_platform'] == '':
-            self.data['rep_platform'] = 'All'
-            
-        assignee, cc = packageInfo.getAssignedPersons(self.pkg_info)
-        self.data['assigned_to'] = assignee
-        self.data['cc'] = cc
-        
-        return "GET_COMPONENT"
     
 
     def do_PRE_ASK_PRODUCT_PLATFORM(self):
         print ''
         product, platform, full_name = gather_from_release()
+        
+        if not self.interact:
+            self.data['product'] = console.custom_input(msg="Product (or '?' for a list): ", preselect=product).strip()
+            if self.data['product'] == '?':
+                return "SELECT_PRODUCT_PLATFORM"
+            self.data['rep_platform'] = console.custom_input(msg="Platform: ", preselect=platform)
+            return "TEST_PRODUCT_PLATFORM"
+        
         print 'Found %s.' % full_name
         correct = console.yes_no('Is that the correct product & platform? yes/no')
 
@@ -134,11 +126,12 @@ CC: %s""" % (self.pkg,
 
 
     def do_GET_PLATFORM(self):
+        if self.data['rep_platform']:
+            return 'GET_COMPONENT'
+        
         print ''
         aux1, platform, aux2 = gather_from_release()
-        print 'Enter your platform. Hint: %s was found.' % platform
-
-        ans = console.custom_input(msg='Answer: ', preselect=platform)
+        ans = console.custom_input(msg='Platform: ', preselect=platform)
         self.data['rep_platform'] = ans
 
         return 'TEST_PRODUCT_PLATFORM'
@@ -172,9 +165,24 @@ CC: %s""" % (self.pkg,
 
 
     def do_GET_COMPONENT(self):
+        if not self.interact:
+            ans = raw_input("Component (or '?' for a list): ").strip()
+            if ans is '':
+                print 'Component cannot be blank.'
+            if ans != '?' and ans is not '':
+                self.data['component'] = ans
+                if self.data['component'] == 'Security':
+                    return 'GET_SECURITY_PREFIX'
+                return 'GET_VERSION'
+
+            
         print ''
         print 'Getting list of components from Bugzilla for product %s.' % self.data['product']
-        comp_list = self.bz.getcomponents(self.data['product'])
+        try:
+            comp_list = self.bz.getcomponents(self.data['product'])
+        except ValueError:
+            print 'The product you have entered is invalid. Please select a correct one.'
+            return 'SELECT_PRODUCT_PLATFORM'
 
         # list is already sorted
         console.print_list(comp_list, columns=2, msg='Available components:')
@@ -190,8 +198,6 @@ CC: %s""" % (self.pkg,
         self.data['component'] = comp_list[idx]
 
         if self.data['component'] == 'Security':
-            if not self.interact:
-                self.data['cc'].append('security-team@suse.de')
             return 'GET_SECURITY_PREFIX'
 
         return 'GET_VERSION'
@@ -210,6 +216,14 @@ CC: %s""" % (self.pkg,
 
 
     def do_GET_VERSION(self):
+        if not self.interact:
+            ans = raw_input("Product version (or '?' for a list): ").strip()
+            if ans != '?' and ans is not '':
+                self.data['version'] = ans
+                return 'LOAD_ASSIGNEE'
+            if ans is '':
+                print 'Version cannot be blank!'
+        
         print ''
         VERSIONS = ('Final', 'Factory', 'unspecified')
         print 'Please select the version of the OS you are using.'
@@ -218,9 +232,6 @@ CC: %s""" % (self.pkg,
         idx = console.get_index(len(VERSIONS), msg='Which one?')
 
         self.data['version'] = VERSIONS[idx]
-        
-        if not self.interact:
-            return "TEST_SUMMARY"
         
         return 'LOAD_ASSIGNEE'
 
@@ -232,7 +243,14 @@ CC: %s""" % (self.pkg,
 
         if self.data['component'] == 'Security':
             cc.append('security-team@suse.de')
-
+        
+        if not self.interact:
+            assignee = console.custom_input(msg='Assignee: ', preselect=assignee)
+            cc = re.split(r',* *', console.custom_input(msg="CC (separated by ','): ", preselect=", ".join(cc)))
+            self.data['assigned_to'] = assignee
+            self.data['cc'] = cc
+            return 'TEST_SUMMARY'
+        
         print 'This/these address(es) were found:'
         print 'assignee: ' + assignee
         print 'cc: ',
@@ -283,7 +301,7 @@ CC: %s""" % (self.pkg,
 
     def do_GET_SUMMARY(self):
         print ''
-        print "Summary can't be empty! Please enter a concise description "\
+        print "Summary can't be empty! Please enter a short description "\
                     "of the bug you are reporting"
         ans = raw_input('--> ')
         self.data['summary'] = ans
