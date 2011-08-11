@@ -13,5 +13,3 @@ password = getpass('Insert password: ')
 cls = bugzilla.getBugzillaClassForURL(bugzillaURL)
 bz = cls(url=bugzillaURL, user=user, password=password)
 
-test = bz.query({'summary': 'python'})
-print len(test)
