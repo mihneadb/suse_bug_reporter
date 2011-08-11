@@ -148,6 +148,8 @@ def do_submit(args=None, pkg=None, sum=None):
     print "Summary entered: " + summary
 
     # check similar bug reports through query by package and then match keywords
+    print ''
+    print 'Looking for similar existing bug reports...'
     bug_list = bz.query({'summary': name})
     if len(bug_list) > 0:
         kw_list = re.findall(r'\w+', summary.lower())
