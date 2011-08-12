@@ -27,6 +27,10 @@ class BugReport(FSM_def.FSM):
         self.ver = pkg_info[0]
         self.apiurl = pkg_info[1]
         self.interact = interact
+        self.products = None
+        self.components = None
+        self.check_prod = False
+        self.check_comp = False
 
 
     def _resp(self, suffix=''):
@@ -125,10 +129,7 @@ CC: %s""" % (self.pkg,
         return 'GET_PLATFORM'
 
 
-    def do_GET_PLATFORM(self):
-        if self.data['rep_platform']:
-            return 'GET_COMPONENT'
-        
+    def do_GET_PLATFORM(self):     
         print ''
         aux1, platform, aux2 = gather_from_release()
         ans = console.custom_input(msg='Platform: ', preselect=platform)
@@ -141,14 +142,16 @@ CC: %s""" % (self.pkg,
         print ''
         print 'Getting list of products from Bugzilla...'
 
-        tmp = self.bz.getproducts()
-        product_list = [p['name'] for p in tmp]
-        product_list.sort()
+        if self.products is None:
+            tmp = self.bz.getproducts()
+            self.products = [p['name'] for p in tmp]
+            self.products.sort()
 
-        console.print_list(product_list, columns=2, msg='Available products:')
-        idx = console.get_index(len(product_list), msg='Which one?')
+        console.print_list(self.products, columns=2, msg='Available products:')
+        idx = console.get_index(len(self.products), msg='Which one?')
 
-        self.data['product'] = product_list[idx]
+        self.data['product'] = self.products[idx]
+
         return 'GET_PLATFORM'
 
 
@@ -161,11 +164,13 @@ CC: %s""" % (self.pkg,
             print 'You have to select a product!'
             return 'SELECT_PRODUCT_PLATFORM'
 
+        if self.check_prod:
+            return 'CHECK'
         return 'GET_COMPONENT'
 
 
-    def do_GET_COMPONENT(self):
-        if not self.interact:
+    def do_GET_COMPONENT(self, components=None):
+        if not self.interact and self.components is None:
             ans = raw_input("Component (or '?' for a list): ").strip()
             if ans is '':
                 print 'Component cannot be blank.'
@@ -175,31 +180,33 @@ CC: %s""" % (self.pkg,
                     return 'GET_SECURITY_PREFIX'
                 return 'GET_VERSION'
 
-            
-        print ''
-        print 'Getting list of components from Bugzilla for product %s.' % self.data['product']
-        try:
-            comp_list = self.bz.getcomponents(self.data['product'])
-        except ValueError:
-            print 'The product you have entered is invalid. Please select a correct one.'
-            return 'SELECT_PRODUCT_PLATFORM'
+        if self.components is None:
+            try:
+                print ''
+                print 'Getting list of components from Bugzilla for product %s.' % self.data['product']
+                self.components = self.bz.getcomponents(self.data['product'])
+            except ValueError:
+                print 'The product you have entered is invalid. Please select a correct one.'
+                return 'SELECT_PRODUCT_PLATFORM'
 
         # list is already sorted
-        console.print_list(comp_list, columns=2, msg='Available components:')
+        console.print_list(self.components, columns=2, msg='Available components:')
         print ''
         try:
-            idx = comp_list.index('Security')
+            idx = self.components.index('Security')
             print "If it's a security problem, please select index %d (Security)." % (idx + 1)
         except ValueError:
             pass
-        idx = console.get_index(len(comp_list), msg='Which one?')
+        idx = console.get_index(len(self.components), msg='Which one?')
 
-        print 'Using component %s.' % comp_list[idx]
-        self.data['component'] = comp_list[idx]
+        print 'Using component %s.' % self.components[idx]
+        self.data['component'] = self.components[idx]
 
         if self.data['component'] == 'Security':
             return 'GET_SECURITY_PREFIX'
 
+        if self.check_comp:
+            return 'CHECK'
         return 'GET_VERSION'
 
 
@@ -211,7 +218,9 @@ CC: %s""" % (self.pkg,
             self.data['summary'] = 'VUL-0 ' + self.data['summary']
         else:
             self.data['summary'] = 'VUL-1 ' + self.data['summary']
-
+        
+        if self.check_comp:
+            return 'CHECK'
         return 'GET_VERSION'
 
 
@@ -362,7 +371,9 @@ CC: %s""" % (self.pkg,
 
         yes = console.yes_no('Do you want to submit this report? Yes/No')
         if yes:
-            return 'SUBMIT'
+            print ''
+            print 'Please wait, checking validity of product and component.'
+            return 'CHECK'
 
         yes = console.yes_no('Bug will not be reported. Do you want to save the report? Yes/No')
         if yes:
@@ -373,6 +384,53 @@ CC: %s""" % (self.pkg,
                 print oe.args[0]
 
         return 'EXIT'
+
+
+    def do_CHECK(self):
+        '''Check validity of product and component for less interactive mode'''
+        
+        # checking product
+        if self.products is None:
+            tmp = self.bz.getproducts()
+            self.products = [p['name'] for p in tmp]
+            self.products.sort()
+        
+        OK = False
+        for prod in self.products:
+            if self.data['product'] == prod:
+                OK = True
+                break
+            elif self.data['product'].lower() == prod.lower():
+                self.data['product'] = prod
+                print 'Product automatically corrected to %s.' % prod
+                OK = True
+                break
+        if not OK:
+            print ''
+            print 'You have selected an invalid product.'
+            self.check_prod = True
+            return 'SELECT_PRODUCT_PLATFORM'
+        
+        # checking component
+        if self.components is None:
+            self.components = self.bz.getcomponents(self.data['product'])
+        
+        OK = False
+        for comp in self.components:
+            if self.data['component'] == comp:
+                OK = True
+                break
+            elif self.data['component'].lower() == comp.lower():
+                self.data['component'] = comp
+                print 'Component automatically corrected to %s.' % comp
+                OK = True
+                break
+        if not OK:
+            print 'You have selected an invalid component.'
+            self.check_comp = True
+            return 'GET_COMPONENT'
+        
+        return 'SUBMIT'
 
 
     def do_SUBMIT(self):
