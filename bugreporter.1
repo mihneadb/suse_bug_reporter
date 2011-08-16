@@ -1,0 +1,73 @@
+.TH bugreporter 1 "SuSE Bug Reporter" 0.1 "SuSE Bug Reporter"
+.SH NAME
+bugreporter - Bug reporting tool for openSUSE
+.SH SYNOPSIS
+.B bugreporter
+[-h | --help] [
+.I command
+[options] [args]]
+.SH DESCRIPTION
+.B bugreporter
+is a tool that allows interacting with Novell's Bugzilla. The users can report bugs and query existing bug reports.
+.PP
+The tool can be run with no arguments, which starts the interactive bug reporting process, or by using it's subcommands, as described below.
+.SH COMMANDS
+.I
+.IP aid
+Helps the user find relevant package.
+.RS
+.PP
+Usage:
+.B bugreporter aid
+[-h | --help] {app, pkg}
+.RS
+.I
+.IP app
+click on a window and find out the app's name
+.I
+.IP pkg
+enter an executable's name and find out it's package
+.RE
+.RE
+.I
+.IP gather
+gathers general system information. Useful for giving developers information about the system the bug was found on.
+.I
+.IP submit
+submit a new bug report. Starts in the less interactive mode, for experienced users. If the fully interactive mode is wanted, just run the tool with no arguments.
+.RS
+.PP
+Usage:
+.B bugreporter submit
+[-h | --help] [-s | --summary <SUMMARY>] <package>
+.RS
+.I
+.IP "-s, --summary"
+provide a short summary for the bug report
+.I
+.IP package
+name of the package to report a bug against
+.RE
+.RE
+.I
+.IP query
+get a list of reports matching a given package and summary
+.RS
+.PP
+Usage:
+.B bugreporter query
+[-h | --help] [-s | --summary <SUMMARY>] <package>
+.RS
+.I
+.IP "-s, --summary"
+provide a short summary for the bug report
+.I
+.IP package
+name of the package that manifests the bug
+.RE
+.RE
+.I
+.IP menu
+interactive menu for the tool
+.SH AUTHOR
+Mihnea Dobrescu-Balaur - mihneadb@gmail.com
