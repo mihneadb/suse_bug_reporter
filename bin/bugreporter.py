@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+VERSION = 0.1
+PROG = 'bugreporter'
+
 import sys
 import argparse
 import re
@@ -295,7 +298,8 @@ def init_parser():
     # creating the parser for the arguments
     desc = '''Bug reporting tool for openSUSE.
 Can be run with no arguments, which starts it in submit bug report mode.'''
-    parser = argparse.ArgumentParser(description=desc)
+    parser = argparse.ArgumentParser(description=desc, prog=PROG)
+    parser.add_argument('--version', action='version', version='SuSE Bug Reporter 0.1')
     commands = parser.add_subparsers()
 
     aid = commands.add_parser('aid', help='aid users to find the relevant app')
