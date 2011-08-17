@@ -12,7 +12,7 @@ setup(name='suse_bug_reporter',
             'suse_bug_reporter.gathering_modules',
             'suse_bug_reporter.util'
             ],
-        scripts=['bin/bugreporter.py'],
+        scripts=['bin/bugreporter'],
         #requires=['python-bugzilla (>=0.6.2)'],
         data_files=[('tests', [os.path.join('tests', f) for f in os.listdir('tests')
             if not f.endswith('.pyc')]),
