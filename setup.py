@@ -14,8 +14,7 @@ setup(name='suse_bug_reporter',
             ],
         scripts=['bin/bugreporter'],
         #requires=['python-bugzilla (>=0.6.2)'],
-        data_files=[('tests', [os.path.join('tests', f) for f in os.listdir('tests')
-            if not f.endswith('.pyc')]),
-            ('share/man/man1', ['bugreporter.1'])
-            ]
+        data_files=[('share/man/man1', ['bugreporter.1'])],
+        platforms='linux',
+        license='Unknown'
      )

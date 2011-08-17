@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from subprocess import Popen, PIPE
 
 # where to gather the information from

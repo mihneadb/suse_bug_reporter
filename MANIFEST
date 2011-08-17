@@ -1,7 +1,7 @@
 README
 bugreporter.1
 setup.py
-bin/bugreporter.py
+bin/bugreporter
 suse_bug_reporter/__init__.py
 suse_bug_reporter/aid_user/__init__.py
 suse_bug_reporter/aid_user/find_app.py
