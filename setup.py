@@ -14,7 +14,8 @@ setup(name='bugreporter',
             ],
         scripts=['bin/bugreporter'],
         #requires=['python-bugzilla (>=0.6.2)'],
-        data_files=[('share/man/man1', ['bugreporter.1'])],
+        data_files=[('share/man/man1', ['bugreporter.1']),
+                ('/etc/bash_completion.d', ['completion/bugreporter'])],
         platforms='linux',
         license='Unknown'
      )

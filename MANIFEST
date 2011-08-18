@@ -24,3 +24,4 @@ bugreporter/util/interact.py
 bugreporter/util/login.py
 bugreporter/util/packageInfo.py
 bugreporter/util/sortByKeywords.py
+completion/bugreporter

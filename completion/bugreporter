@@ -1,0 +1,49 @@
+_bugreporter() 
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    
+    # options
+    opts="--help --version aid gather submit query menu"
+    
+    # handle args
+    case "${prev}" in
+        aid)
+            local args="--help app pkg"
+            COMPREPLY=( $(compgen -W "${args}" -- ${cur}) )
+            return 0
+            ;;
+        query)
+            local args="--help --package --summary"
+            COMPREPLY=( $(compgen -W "${args}" -- ${cur}) )
+            return 0
+            ;;
+        submit)
+            local args="--help --package --summary"
+            COMPREPLY=( $(compgen -W "${args}" -- ${cur}) )
+            return 0
+            ;;
+        bugreporter)
+            COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+            return 0
+            ;;
+        --package)
+            local packages=`rpm -qa --qf '%{NAME}\n' | sort`
+            COMPREPLY=( $(compgen -W "${packages}" -- ${cur}) )
+            return 0
+            ;;
+        -p)
+            local packages=`rpm -qa --qf '%{NAME}\n' | sort`
+            COMPREPLY=( $(compgen -W "${packages}" -- ${cur}) )
+            return 0
+            ;;
+        *)
+            return 0
+            ;;
+    esac        
+
+    return 0
+}
+complete -F _bugreporter bugreporter
