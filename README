@@ -1,16 +1,1 @@
-Usage instructions:
-
-You need to get the python-bugzilla library:
-$ git clone git://gitorious.org/opensuse/python-bugzilla.git -b suse
-
-You also need osc:
-# zypper in osc
-
-Then, use the tool from the parent folder of where you have the repos cloned:
-$ PYTHONPATH=python-bugzilla/:suse_bug_reporter/ suse_bug_reporter/bin/bugreporter.py 
-
-
-For testing:
-Install python-nose (zypper in python-nose) and then just do:
-$ PYTHONPATH=python-bugzilla/:suse_bug_reporter/ nosetests -w suse_bug_reporter/tests/
-
+Bug reporting tool for openSUSE.
