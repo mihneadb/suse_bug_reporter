@@ -7,8 +7,8 @@ import osc.core
 
 from subprocess import Popen, PIPE
 
-from suse_bug_reporter.util.console import yes_no, print_list, get_index
-from suse_bug_reporter.aid_user.find_package import which
+from bugreporter.util.console import yes_no, print_list, get_index
+from bugreporter.aid_user.find_package import which
 
 try:
     from xml.etree import cElementTree as ET

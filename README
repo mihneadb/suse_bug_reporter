@@ -7,7 +7,7 @@ You also need osc:
 # zypper in osc
 
 Then, use the tool from the parent folder of where you have the repos cloned:
-$ PYTHONPATH=python-bugzilla/:suse_bug_reporter/ suse_bug_reporter/bin/susebugreporter.py 
+$ PYTHONPATH=python-bugzilla/:suse_bug_reporter/ suse_bug_reporter/bin/bugreporter.py 
 
 
 For testing:

@@ -1,5 +1,5 @@
 def test_find_app():
-    from suse_bug_reporter.aid_user.find_app import find_app
+    from bugreporter.aid_user.find_app import find_app
 
     resp = "WM_CLASS(STRING) = \"konsole\", \"Konsole\""
     
@@ -8,7 +8,7 @@ def test_find_app():
 
 
 def test_which():
-    from suse_bug_reporter.aid_user.find_package import which
+    from bugreporter.aid_user.find_package import which
 
     try:
         ans = which('/some/path/exec')
@@ -23,7 +23,7 @@ def test_which():
 
 
 def test_get_package():
-    from suse_bug_reporter.aid_user.find_package import get_package
+    from bugreporter.aid_user.find_package import get_package
 
     try:
         ans = get_package('relative/path')
@@ -38,7 +38,7 @@ def test_get_package():
 
 
 def test_find_package():
-    from suse_bug_reporter.aid_user.find_package import find_package
+    from bugreporter.aid_user.find_package import find_package
     
     ans = find_package('ls')
     assert ans == 'The package for /bin/ls is coreutils.'

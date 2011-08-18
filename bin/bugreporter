@@ -9,26 +9,17 @@ import re
 import pprint
 import osc.conf
 
-# name of the main package
-pkg = 'suse_bug_reporter'
-
-# name of the util package
-u_pkg = 'util'
-
-# name of the aid user package
-a_pkg = 'aid_user'
-
 # relevance threshold for similar bug search
 rel_threshold = 0.75
 
 # custom imports
 import bugzilla
-from suse_bug_reporter.util.console import print_list, yes_no, get_index, choice, pager, custom_input
-from suse_bug_reporter.util import packageInfo, gather
-from suse_bug_reporter.util.sortByKeywords import sortByKeywords
-from suse_bug_reporter.util.bugReport import BugReport
-from suse_bug_reporter.aid_user import find_app, find_package
-from suse_bug_reporter.util.initBz import initBugzilla
+from bugreporter.util.console import print_list, yes_no, get_index, choice, pager, custom_input
+from bugreporter.util import packageInfo, gather
+from bugreporter.util.sortByKeywords import sortByKeywords
+from bugreporter.util.bugReport import BugReport
+from bugreporter.aid_user import find_app, find_package
+from bugreporter.util.initBz import initBugzilla
 
 
 def do_find_app(args=None):

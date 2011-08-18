@@ -1,5 +1,5 @@
 import bugzilla
-from suse_bug_reporter.util import login
+from bugreporter.util import login
 
 def initBugzilla():
     #check login

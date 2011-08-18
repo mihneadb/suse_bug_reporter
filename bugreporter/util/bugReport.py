@@ -2,9 +2,9 @@ import os
 import pprint
 import re
 
-from suse_bug_reporter.gathering_modules.release import gather_from_release
-from suse_bug_reporter.util import console, packageInfo, gather
-from suse_bug_reporter.util import FSM_def
+from bugreporter.gathering_modules.release import gather_from_release
+from bugreporter.util import console, packageInfo, gather
+from bugreporter.util import FSM_def
 
 
 class BugReport(FSM_def.FSM):

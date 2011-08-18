@@ -4,7 +4,7 @@ from subprocess import Popen, PIPE
 gather_from = ['lsmod', 'uname', 'release', 'cpu', 'vga', 'mem', 'cmdline']
 
 # name of the main package
-pkg = 'suse_bug_reporter'
+pkg = 'bugreporter'
 
 # name of the gathering modules package
 g_pkg = 'gathering_modules'

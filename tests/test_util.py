@@ -1,10 +1,10 @@
 def test_bz():
-    from suse_bug_reporter.util.initBz import initBugzilla
+    from bugreporter.util.initBz import initBugzilla
     bz = initBugzilla()
 
 
 def test_package_getInfo():
-    from suse_bug_reporter.util import packageInfo
+    from bugreporter.util import packageInfo
 
     tup = ('0.13.3-5.1', 'https://api.opensuse.org', 'openSUSE:11.4', 'rhythmbox')
 
@@ -13,7 +13,7 @@ def test_package_getInfo():
 
 
 def test_package_getAssignedPersons():
-    from suse_bug_reporter.util import packageInfo
+    from bugreporter.util import packageInfo
     pkg_info = packageInfo.getInfo('rhythmbox')
 
     tup = ('os.gnome.maintainers@gmail.com', [])
@@ -21,9 +21,9 @@ def test_package_getAssignedPersons():
 
 
 def test_bugReport():
-    from suse_bug_reporter.util.bugReport import BugReport
-    from suse_bug_reporter.util.initBz import initBugzilla
-    from suse_bug_reporter.util import packageInfo
+    from bugreporter.util.bugReport import BugReport
+    from bugreporter.util.initBz import initBugzilla
+    from bugreporter.util import packageInfo
 
     data = {'assigned_to': 'os.gnome.maintainers@gmail.com',
              'cc': [],

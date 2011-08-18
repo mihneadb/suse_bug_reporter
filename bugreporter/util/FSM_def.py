@@ -18,7 +18,7 @@ import logging
 
 
 logging.basicConfig()
-log = logging.getLogger('suse_bug_reporter')
+log = logging.getLogger('bugreporter')
 
 
 class FSM(object):

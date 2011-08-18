@@ -1,16 +1,16 @@
 import os
 from distutils.core import setup
 
-setup(name='suse_bug_reporter',
+setup(name='bugreporter',
         version='1.0',
         description='Bug reporting tool for openSUSE',
         author='Mihnea Dobrescu-Balaur',
         author_email='mihneadb@gmail.com',
         url='https://github.com/mihneadb/suse_bug_reporter/',
-        packages=['suse_bug_reporter',
-            'suse_bug_reporter.aid_user',
-            'suse_bug_reporter.gathering_modules',
-            'suse_bug_reporter.util'
+        packages=['bugreporter',
+            'bugreporter.aid_user',
+            'bugreporter.gathering_modules',
+            'bugreporter.util'
             ],
         scripts=['bin/bugreporter'],
         #requires=['python-bugzilla (>=0.6.2)'],
