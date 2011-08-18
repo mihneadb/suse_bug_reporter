@@ -304,13 +304,13 @@ Can be run with no arguments, which starts it in submit bug report mode.'''
     gather.set_defaults(func=do_gather)
 
     submit = commands.add_parser('submit', help='submit a new bug [less interactive mode, faster]')
-    submit.add_argument('package', type=str, help='the name of the package to submit a report against')
+    submit.add_argument('-p,', '--package', type=str, help='the name of the package to submit a report against', dest='package')
     submit.add_argument('-s', '--summary', help='summary of the bug to be reported', dest='summary')
     submit.set_defaults(func=do_submit)
 
     query = commands.add_parser('query', help='get a list of reports')
     query.set_defaults(func=do_query)
-    query.add_argument('package', type=str, help='the name of the package to query')
+    query.add_argument('-p', '--package', type=str, help='the name of the package to query', dest='package')
     query.add_argument('-s', '--summary', help='summary of the bug, for filtering results', dest='summary')
     
     menu = commands.add_parser('menu', help='get a menu to choose a mode')

@@ -39,13 +39,13 @@ submit a new bug report. Starts in the less interactive mode, for experienced us
 .PP
 Usage:
 .B bugreporter submit
-[-h | --help] [-s | --summary <SUMMARY>] <package>
+[-h | --help] [-s | --summary <SUMMARY>] [-p | --package <PACKAGE>]
 .RS
 .I
 .IP "-s, --summary"
 provide a short summary for the bug report
 .I
-.IP package
+.IP "-p, --package"
 name of the package to report a bug against
 .RE
 .RE
@@ -56,13 +56,13 @@ get a list of reports matching a given package and summary
 .PP
 Usage:
 .B bugreporter query
-[-h | --help] [-s | --summary <SUMMARY>] <package>
+[-h | --help] [-s | --summary <SUMMARY>] [-p | --package <PACKAGE>]
 .RS
 .I
 .IP "-s, --summary"
 provide a short summary for the bug report
 .I
-.IP package
+.IP "-p, --package"
 name of the package that manifests the bug
 .RE
 .RE
