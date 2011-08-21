@@ -30,13 +30,11 @@ _bugreporter()
             return 0
             ;;
         --package)
-            local packages=`rpm -qa --qf '%{NAME}\n' | sort`
-            COMPREPLY=( $(compgen -W "${packages}" -- ${cur}) )
+            _rpm_installed_packages "" ""
             return 0
             ;;
         -p)
-            local packages=`rpm -qa --qf '%{NAME}\n' | sort`
-            COMPREPLY=( $(compgen -W "${packages}" -- ${cur}) )
+            _rpm_installed_packages "" ""
             return 0
             ;;
         *)
