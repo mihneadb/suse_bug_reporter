@@ -3,11 +3,12 @@
 VERSION = 1.0
 PROG = 'bugreporter'
 
-import sys
 import argparse
-import re
-import pprint
 import osc.conf
+import pprint
+import re
+import readline
+import sys
 
 # relevance threshold for similar bug search
 rel_threshold = 0.75
