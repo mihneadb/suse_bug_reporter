@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+import readline
 import tempfile
 
 
@@ -38,6 +39,7 @@ def fitString(s, cols):
     if length >= cols:
         return s[:cols-7] + ' [...]'
     return s
+
 
 def pager(a_list, attr_list=None, columns=1, msg=None):
     '''Outputs the provided list similar to more / less. Provides the possibility
@@ -163,11 +165,18 @@ def get_index(length, msg=None):
 
 
 def custom_input(msg='', preselect=''):
-    ans = raw_input(msg + "[preselected: %s] " % preselect)
+    def pre_input_hook():
+        readline.insert_text(preselect)
+        readline.redisplay()
+
+    readline.set_pre_input_hook(pre_input_hook)
+
+    ans = raw_input(msg + ': ')
+    readline.set_pre_input_hook(None)
     if ans.strip() is '':
         return preselect
 
-    return ans
+    return ans.strip()
 
 
 def get_editor():
