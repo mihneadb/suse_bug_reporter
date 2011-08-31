@@ -85,7 +85,11 @@ def do_submit(args=None, pkg=None, sum=None):
         sys.exit(1)
 
     # init bugzilla
-    bz = initBugzilla()
+    try:
+        bz = initBugzilla()
+    except:
+        print 'Bugzilla error. Maybe check Internet connection?'
+        sys.exit(1)
     
     # check if it should be run in minimal interaction mode.
     interact = 1
@@ -198,9 +202,21 @@ def do_query(args=None):
     if name == '*':
         print 'Invalid package name!'
         sys.exit(1)
-
-    bz = initBugzilla()
     
+    # init osc
+    try:
+        osc.conf.get_config()
+    except osc.oscerr.NoConfigfile:
+        print 'You have to have a valid .oscrc file. Please do so by running osc.'
+        sys.exit(1)
+
+    # init bugzilla
+    try:
+        bz = initBugzilla()
+    except:
+        print 'Bugzilla error. Maybe check Internet connection?'
+        sys.exit(1)
+
     pkg_info = packageInfo.getInfo(name)
 
     if pkg_info == None:
