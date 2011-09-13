@@ -190,7 +190,7 @@ def getPersons(apiurl, tree):
     ''' returns a list of tuples like (email, role) '''
     ret = []
     
-    for person in tree.iter('person'):
+    for person in tree.findall('person'):
         mail = getMail(apiurl, person.get('userid'))
         role = person.get('role')
 
