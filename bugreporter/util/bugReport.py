@@ -6,6 +6,30 @@ from bugreporter.gathering_modules.release import gather_from_release
 from bugreporter.util import console, packageInfo, gather
 from bugreporter.util import FSM_def
 
+import xmlrpclib
+
+def getcomponents(bz, product):
+
+    ret = list()
+
+    try:
+        ret = bz.getcomponents(product)
+    except xmlrpclib.ProtocolError, pe:
+        print "WARNING: getcomponents XMLRPC call failed, using hardcoded values"
+        ret = (
+          "Apache", "AppArmor", "AutoYaST", "Banshee", "Basesystem",
+          "Bootloader", "Commercial", "Compiz", "Development", "Documentation",
+          "Evolution", "Firefox", "GNOME", "Hotplug", "Installation", "ISDN", 
+          "Java", "KDE3", "KDE4 Applications", "KDE4 Workspace", "Kernel", 
+          "libzypp", "Live Medium", "LXDE", "Maintenance", "Mobile Devices", 
+          "Moblin", "Mono", "Network", "OpenOffice.org", "Other", "Patterns", 
+          "Printing", "Release Notes", "Samba", "SaX2", "Security", 
+          "Sound", "Translations", "Update Problems", "Usability", "WBEM", 
+          "WebYaST", "X.Org", "X11 3rd Party Driver", "X11 Applications",
+          "Xen", "Xfce", "YaST2", )
+
+    return ret
+
 
 class BugReport(FSM_def.FSM):
 
@@ -181,7 +205,7 @@ CC: %s""" % (self.pkg,
             try:
                 print ''
                 print 'Getting list of components from Bugzilla for product %s.' % self.data['product']
-                self.components = self.bz.getcomponents(self.data['product'])
+                self.components = getcomponents(self.bz, self.data['product'])
             except ValueError:
                 print 'The product you have entered is invalid. Please select a correct one.'
                 return 'SELECT_PRODUCT_PLATFORM'
@@ -410,7 +434,7 @@ CC: %s""" % (self.pkg,
         
         # checking component
         if self.components is None:
-            self.components = self.bz.getcomponents(self.data['product'])
+            self.components = getcomponents(self.bz, self.data['product'])
         
         OK = False
         for comp in self.components:
