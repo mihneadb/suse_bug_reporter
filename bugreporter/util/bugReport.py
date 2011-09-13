@@ -410,22 +410,28 @@ CC: %s""" % (self.pkg,
     def do_CHECK(self):
         '''Check validity of product and component for less interactive mode'''
         
+        OK = False
         # checking product
         if self.products is None:
-            tmp = self.bz.getproducts()
-            self.products = [p['name'] for p in tmp]
-            self.products.sort()
+            try:
+                tmp = self.bz.getproducts()
+            except xmlrpclib.ProtocolError, pe:
+                print "ERROR: cannot check a product, assuming is correct and continue with submitting"
+                OK = True
+
+        self.products = [p['name'] for p in tmp]
+        self.products.sort()
         
-        OK = False
-        for prod in self.products:
-            if self.data['product'] == prod:
-                OK = True
-                break
-            elif self.data['product'].lower() == prod.lower():
-                self.data['product'] = prod
-                print 'Product automatically corrected to %s.' % prod
-                OK = True
-                break
+        if not OK:
+            for prod in self.products:
+                if self.data['product'] == prod:
+                    OK = True
+                    break
+                elif self.data['product'].lower() == prod.lower():
+                    self.data['product'] = prod
+                    print 'Product automatically corrected to %s.' % prod
+                    OK = True
+                    break
         if not OK:
             print ''
             print 'You have selected an invalid product.'
