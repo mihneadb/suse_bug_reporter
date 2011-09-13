@@ -35,7 +35,7 @@ def sortByKeywords(bug_list, keyword_list, rel_threshold):
 
     for bug in bug_list:
         s = bug.summary.lower()
-        s = re.findall(r'\w+', s)
+        s = re.findall(r'[\w_-]+', s)
         sum = 0
         kw_matched = 0
         for keyword in keyword_list:
