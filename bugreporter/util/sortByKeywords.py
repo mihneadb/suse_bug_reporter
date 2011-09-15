@@ -37,18 +37,22 @@ def sortByKeywords(bug_list, keyword_list, rel_threshold):
         s = bug.summary.lower()
         s = re.findall(r'\w+', s)
         sum = 0
+        kw_matched = 0
         for keyword in keyword_list:
             if (len(keyword) < 3) or (keyword in IGNORED):
                 continue
             if keyword in s:
                 # the keyword is matched exactly
                 sum += len(keyword) * 2
+                kw_matched += 1
                 continue
             # check to see if the keyword matches partially
             for word in s:
                 if keyword in word:
                     sum += len(keyword)
+                    kw_matched += 1
         if sum != 0:
+            sum += 5 ** kw_matched
             if max_relevance < sum:
                 max_relevance = sum
             toSort.append((bug, sum))
