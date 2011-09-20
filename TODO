@@ -1,0 +1,48 @@
+# TODO
+
+What else can be done
+
+## Offline mode
+
+Allow the offline mode, where no network connection will be needed. This
+can be activated by --offline switch and-or by first failure when
+talking with a bugzilla.
+
+The aim is to separate the gathering and the reporting, as most of
+production machines are not connected to the network.
+
+## Template reporting
+
+The second part of the feature is ability to submit the generated
+report. There's is some support, so maybe just test it.
+
+## Version of the bugreporter tools in the report
+
+To advertize it, there should be some information about a fact the bug
+has been submitted using bugreport. For instance
+
+X-SubmittedBy: bugreporter 1.5.rc4
+
+## Work with crashdumps
+
+Tool should scan dmesg output for recent crashes. Should it touch the
+core_pattern as well?
+
+## support for per-package hooks
+
+Package could install their own information gathering functions. I think
+this has been prepared, but not done.
+
+Think: use /lib and /etc (system and user-specific hooks, like systemd
+does?)
+
+##
+Integrate to yast support module (or whatever it is called)
+- likely not before GUI is done
+
+## Non technical stuff
+
+advertise the tool once it gets to Factory
+- blogpost
+- release notes for 12.1
+- mention it on the bugreporting wikipage
